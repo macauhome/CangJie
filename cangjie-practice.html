@@ -693,11 +693,7 @@
                     }
                 };
 
-                // Generate initial questions for the starting level only (to save performance)
-                // Other levels will be generated when selected
-                this.generateQuestionsForLevel(this.currentLevel);
-
-                // Cangjie key mappings
+                // Initialize Cangjie key mappings BEFORE generating questions
                 this.cangjieKeys = [
                     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
                     'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
@@ -751,15 +747,12 @@
                 this.chineseToEnglish['卜'] = 'Y';
                 this.chineseToEnglish['重'] = 'Z';
 
-                // Create mapping from Cangjie codes to Chinese characters
+                // Initialize code-to-character mapping
                 this.codeToCharacter = {};
-                
-                // Populate the mapping from all game data
-                for (let level = 1; level <= 4; level++) {
-                    this.gameData[level].questions.forEach(question => {
-                        this.codeToCharacter[question.code] = question.char;
-                    });
-                }
+
+                // Generate initial questions for the starting level only (to save performance)
+                // Other levels will be generated when selected
+                this.generateQuestionsForLevel(this.currentLevel);
             }
 
             setupEventListeners() {
