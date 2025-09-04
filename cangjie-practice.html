@@ -518,7 +518,7 @@
                     <br>
                     <button class="submit-btn" id="submit-btn">提交答案</button>
                     <button class="submit-btn skip-btn" id="skip-btn">跳過</button>
-                    <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">隨機順序</button>
+                    <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
                 </div>
 
                 <!-- Cangjie Keyboard -->
@@ -693,19 +693,9 @@
                     }
                 };
 
-                // Populate level 5 with mixed questions from all levels
-                for (let level = 1; level <= 4; level++) {
-                    this.gameData[5].questions = this.gameData[5].questions.concat(
-                        this.gameData[level].questions.slice()
-                    );
-                }
-                // Shuffle level 5 questions
-                this.shuffleArray(this.gameData[5].questions);
-
-                // Shuffle all level questions initially for randomization
-                for (let level = 1; level <= 5; level++) {
-                    this.shuffleArray(this.gameData[level].questions);
-                }
+                // Generate initial questions for the starting level only (to save performance)
+                // Other levels will be generated when selected
+                this.generateQuestionsForLevel(this.currentLevel);
 
                 // Cangjie key mappings
                 this.cangjieKeys = [
@@ -1007,14 +997,169 @@
                 });
             }
 
+            generateQuestionsForLevel(level) {
+                // Generate fresh questions at runtime every time
+                const questionCount = level === 5 ? 25 : 12; // Increased question count
+                this.gameData[level].questions = [];
+                
+                if (level === 1) {
+                    // Level 1: Randomly select basic radicals each time
+                    const allBasicRadicals = this.getAllBasicRadicals();
+                    this.gameData[level].questions = this.getRandomItems(allBasicRadicals, questionCount);
+                } else if (level === 2) {
+                    // Level 2: Generate random two-radical combinations
+                    this.gameData[level].questions = this.generateRandomTwoRadicalCombinations(questionCount);
+                } else if (level === 3) {
+                    // Level 3: Generate random three-radical combinations
+                    this.gameData[level].questions = this.generateRandomThreeRadicalCombinations(questionCount);
+                } else if (level === 4) {
+                    // Level 4: Generate random complex combinations
+                    this.gameData[level].questions = this.generateRandomComplexCombinations(questionCount);
+                } else if (level === 5) {
+                    // Level 5: Mix random selections from all levels
+                    const mixedQuestions = [];
+                    mixedQuestions.push(...this.getRandomItems(this.getAllBasicRadicals(), 5));
+                    mixedQuestions.push(...this.generateRandomTwoRadicalCombinations(6));
+                    mixedQuestions.push(...this.generateRandomThreeRadicalCombinations(6));
+                    mixedQuestions.push(...this.generateRandomComplexCombinations(8));
+                    this.gameData[level].questions = mixedQuestions;
+                }
+                
+                // Add hints to all questions
+                this.gameData[level].questions.forEach(q => {
+                    q.hint = this.generateHint(q.char, q.code);
+                });
+                
+                // Update code-to-character mapping
+                this.updateCodeToCharacterMapping();
+                
+                // Shuffle the generated questions for random order
+                this.shuffleArray(this.gameData[level].questions);
+                
+                console.log(`Generated ${this.gameData[level].questions.length} random questions for Level ${level}`);
+            }
+
+            getAllBasicRadicals() {
+                // Expanded pool of basic radicals and simple characters
+                return [
+                    {char: '一', code: 'M'}, {char: '丨', code: 'L'}, {char: '丿', code: 'N'}, {char: '丶', code: 'Y'},
+                    {char: '口', code: 'R'}, {char: '日', code: 'A'}, {char: '月', code: 'B'}, {char: '木', code: 'D'},
+                    {char: '水', code: 'E'}, {char: '火', code: 'F'}, {char: '土', code: 'G'}, {char: '竹', code: 'H'},
+                    {char: '戈', code: 'I'}, {char: '十', code: 'J'}, {char: '大', code: 'K'}, {char: '中', code: 'L'},
+                    {char: '弓', code: 'N'}, {char: '人', code: 'O'}, {char: '心', code: 'P'}, {char: '手', code: 'Q'},
+                    {char: '尸', code: 'S'}, {char: '廿', code: 'T'}, {char: '山', code: 'U'}, {char: '女', code: 'V'},
+                    {char: '田', code: 'W'}, {char: '卜', code: 'Y'}, {char: '金', code: 'C'}
+                ];
+            }
+
+            generateRandomTwoRadicalCombinations(count) {
+                // Large pool of two-radical combinations for random selection
+                const twoRadicalPool = [
+                    {char: '二', code: 'MM'}, {char: '三', code: 'MMM'}, {char: '十', code: 'JX'},
+                    {char: '明', code: 'AB'}, {char: '林', code: 'DD'}, {char: '休', code: 'OD'},
+                    {char: '上', code: 'YM'}, {char: '下', code: 'MY'}, {char: '小', code: 'NC'},
+                    {char: '工', code: 'MLM'}, {char: '王', code: 'MG'}, {char: '子', code: 'ND'},
+                    {char: '夫', code: 'OK'}, {char: '丁', code: 'MN'}, {char: '八', code: 'HO'},
+                    {char: '七', code: 'JU'}, {char: '力', code: 'KS'}, {char: '又', code: 'CK'},
+                    {char: '刀', code: 'SH'}, {char: '了', code: 'VN'}, {char: '才', code: 'FQ'},
+                    {char: '天', code: 'MK'}, {char: '九', code: 'KN'}, {char: '入', code: 'OY'},
+                    {char: '乃', code: 'NVL'}, {char: '么', code: 'YVY'}, {char: '久', code: 'NON'},
+                    {char: '已', code: 'VY'}, {char: '己', code: 'SU'}, {char: '巳', code: 'RU'},
+                    {char: '士', code: 'JM'}, {char: '土', code: 'G'}, {char: '干', code: 'JM'},
+                    {char: '千', code: 'OP'}, {char: '万', code: 'OY'}, {char: '与', code: 'GKN'},
+                    {char: '丌', code: 'MJJ'}, {char: '不', code: 'MF'}, {char: '中', code: 'L'},
+                    {char: '丰', code: 'MJJ'}, {char: '丹', code: 'MY'}
+                ];
+                return this.getRandomItems(twoRadicalPool, count);
+            }
+
+            generateRandomThreeRadicalCombinations(count) {
+                // Expanded pool of three-radical combinations for random selection
+                const threeRadicalPool = [
+                    {char: '好', code: 'VND'}, {char: '門', code: 'AN'}, {char: '和', code: 'HD'},
+                    {char: '可', code: 'RK'}, {char: '只', code: 'RQ'}, {char: '在', code: 'GMI'},
+                    {char: '有', code: 'EQM'}, {char: '左', code: 'KD'}, {char: '右', code: 'KR'},
+                    {char: '去', code: 'GMU'}, {char: '再', code: 'MML'}, {char: '也', code: 'PD'},
+                    {char: '多', code: 'NY'}, {char: '少', code: 'NC'}, {char: '世', code: 'JJJ'},
+                    {char: '地', code: 'GPD'}, {char: '年', code: 'OQ'}, {char: '以', code: 'VYL'},
+                    {char: '後', code: 'HOIT'}, {char: '前', code: 'UOI'}, {char: '今', code: 'OIN'},
+                    {char: '因', code: 'WK'}, {char: '回', code: 'WR'}, {char: '每', code: 'EOI'},
+                    {char: '她', code: 'VHE'}, {char: '他', code: 'OJBD'}, {char: '我', code: 'HQNI'},
+                    {char: '你', code: 'OJKL'}, {char: '們', code: 'ANS'}, {char: '自', code: 'HXBU'},
+                    {char: '從', code: 'OOO'}, {char: '把', code: 'QJR'}, {char: '個', code: 'OJLO'},
+                    {char: '很', code: 'HVVL'}, {char: '就', code: 'YLWP'}, {char: '都', code: 'NL'},
+                    {char: '被', code: 'MWLMI'}, {char: '給', code: 'VIF'}, {char: '讓', code: 'YTJRR'},
+                    {char: '想', code: 'DXNO'}, {char: '要', code: 'MWV'}, {char: '做', code: 'OJLR'},
+                    {char: '來', code: 'DOI'}, {char: '走', code: 'GQRU'}, {char: '看', code: 'HQBU'},
+                    {char: '聽', code: 'SJRB'}, {char: '說', code: 'YRYTU'}, {char: '問', code: 'ANR'},
+                    {char: '打', code: 'QJR'}, {char: '找', code: 'QJD'}, {char: '拿', code: 'QJE'}
+                ];
+                return this.getRandomItems(threeRadicalPool, count);
+            }
+
+            generateRandomComplexCombinations(count) {
+                // Expanded pool of complex 4+ radical combinations for random selection
+                const complexPool = [
+                    {char: '信', code: 'OKMR'}, {char: '他', code: 'OJBD'}, {char: '我', code: 'HQNI'},
+                    {char: '的', code: 'WLJR'}, {char: '是', code: 'AMYO'}, {char: '來', code: 'DOI'},
+                    {char: '雨', code: 'MWBY'}, {char: '學', code: 'BBGF'}, {char: '時', code: 'AFBR'},
+                    {char: '會', code: 'OMWA'}, {char: '能', code: 'BHNF'}, {char: '說', code: 'YRYTU'},
+                    {char: '看', code: 'HQBU'}, {char: '知', code: 'YMDI'}, {char: '道', code: 'YTCSH'},
+                    {char: '開', code: 'JJKA'}, {char: '關', code: 'ANMG'}, {char: '那', code: 'NANI'},
+                    {char: '這', code: 'YMCW'}, {char: '習', code: 'SMFF'}, {char: '表', code: 'MWLV'},
+                    {char: '電', code: 'JRWC'}, {char: '話', code: 'YRNR'}, {char: '書', code: 'AMII'},
+                    {char: '字', code: 'JCND'}, {char: '寫', code: 'UMCJ'}, {char: '讀', code: 'YRGHU'},
+                    {char: '聲', code: 'GASR'}, {char: '音', code: 'YAV'}, {char: '意', code: 'YISP'},
+                    {char: '思', code: 'LNP'}, {char: '想', code: 'DXNO'}, {char: '記', code: 'YROK'},
+                    {char: '事', code: 'JLB'}, {char: '情', code: 'PTQL'}, {char: '理', code: 'MGJM'},
+                    {char: '當', code: 'JREC'}, {char: '然', code: 'YOAF'}, {char: '結', code: 'VFGK'},
+                    {char: '果', code: 'WDMVM'}, {char: '原', code: 'MWMBO'}, {char: '因', code: 'WK'},
+                    {char: '題', code: 'MBNB'}, {char: '問', code: 'ANR'}, {char: '答', code: 'HTCO'},
+                    {char: '案', code: 'MTAJ'}, {char: '法', code: 'EIJR'}, {char: '方', code: 'YSHML'},
+                    {char: '式', code: 'IROK'}, {char: '種', code: 'HDTJR'}, {char: '類', code: 'HXOOO'},
+                    {char: '樣', code: 'DYFS'}, {char: '感', code: 'TOPJ'}, {char: '覺', code: 'YBUK'},
+                    {char: '變', code: 'YOYOY'}, {char: '化', code: 'OFNHE'}, {char: '成', code: 'DHNV'},
+                    {char: '發', code: 'NLWK'}, {char: '生', code: 'HQM'}, {char: '活', code: 'EONH'}
+                ];
+                return this.getRandomItems(complexPool, count);
+            }
+
+            updateCodeToCharacterMapping() {
+                this.codeToCharacter = {};
+                for (let level = 1; level <= 5; level++) {
+                    if (this.gameData[level] && this.gameData[level].questions) {
+                        this.gameData[level].questions.forEach(question => {
+                            this.codeToCharacter[question.code] = question.char;
+                        });
+                    }
+                }
+            }
+
+            getRandomItems(array, count) {
+                const shuffled = [...array];
+                this.shuffleArray(shuffled);
+                return shuffled.slice(0, Math.min(count, shuffled.length));
+            }
+
+            generateHint(char, code) {
+                let radicalNames = '';
+                for (let c of code) {
+                    if (this.keyDescriptions[c]) {
+                        radicalNames += this.keyDescriptions[c];
+                    }
+                }
+                return `${radicalNames} (${code})`;
+            }
+
             selectLevel(level) {
                 if (level > this.getUnlockedLevel()) return;
 
                 this.currentLevel = level;
                 this.currentQuestionIndex = 0;
 
-                // Randomize questions for the selected level
-                this.shuffleArray(this.gameData[level].questions);
+                // Always generate fresh questions at runtime every time level is selected
+                console.log(`Generating fresh random questions for Level ${level}...`);
+                this.generateQuestionsForLevel(level);
 
                 // Update level buttons
                 document.querySelectorAll('.level-button').forEach(button => {
@@ -1028,6 +1173,16 @@
                 this.generateQuestion();
                 this.updateDisplay();
                 this.saveProgress();
+                
+                // Show feedback about new random questions
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = `🎲 Level ${level}: 已生成全新隨機題目！`;
+                feedback.className = 'feedback correct';
+                feedback.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    feedback.classList.add('hidden');
+                }, 2000);
             }
 
             generateQuestion() {
@@ -1267,14 +1422,15 @@
             }
 
             shuffleCurrentLevel() {
-                // Shuffle questions in current level
-                this.shuffleArray(this.gameData[this.currentLevel].questions);
+                // Generate completely new random questions instead of just shuffling
+                console.log(`Regenerating random questions for Level ${this.currentLevel}...`);
+                this.generateQuestionsForLevel(this.currentLevel);
                 this.currentQuestionIndex = 0;
                 this.generateQuestion();
                 
                 // Show feedback
                 const feedback = document.getElementById('feedback');
-                feedback.textContent = '已重新打亂題目順序！';
+                feedback.textContent = '🎲 已重新生成隨機題目！';
                 feedback.className = 'feedback correct';
                 feedback.classList.remove('hidden');
                 
