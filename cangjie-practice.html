@@ -750,11 +750,8 @@
                 const input = document.getElementById('cangjie-input');
 
                 submitBtn.addEventListener('click', () => {
-                    console.log('Submit button clicked');
                     const inputValue = document.getElementById('cangjie-input').value;
-                    console.log('Input value at submit:', inputValue);
                     if (inputValue.trim() === '') {
-                        console.warn('Empty input detected!');
                         return;
                     }
                     this.submitAnswer();
@@ -772,62 +769,79 @@
                     // Allow all other keys to be processed normally
                 });
 
-                // Handle Chinese input method and display Chinese characters only
+                // Handle Chinese input method and display Chinese characters only - OPTIMIZED
+                let inputTimeout;
                 input.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    let displayValue = '';
+                    // Skip processing during composition to avoid interference
+                    if (e.target.isComposing) {
+                        return;
+                    }
                     
-                    console.log('Input event triggered, value:', value, 'isComposing:', e.target.isComposing);
-                    
-                    for (let char of value) {
-                        if (this.chineseToEnglish[char]) {
-                            // Keep Chinese characters as is for display
-                            displayValue += char;
-                        } else if (/[a-zA-Z]/.test(char)) {
-                            // Convert English letters to Chinese radicals for display
-                            const upperChar = char.toUpperCase();
-                            if (this.keyDescriptions[upperChar]) {
-                                displayValue += this.keyDescriptions[upperChar];
-                            } else {
-                                // Keep unrecognized letters as is for now
-                                displayValue += char;
-                            }
-                        } else {
-                            // Keep other characters (numbers, punctuation, etc.) as is
-                            displayValue += char;
+                    // Debounce rapid input changes for better performance
+                    clearTimeout(inputTimeout);
+                    inputTimeout = setTimeout(() => {
+                        const value = e.target.value;
+                        const displayValue = this.convertToDisplayValue(value);
+                        
+                        // Only update if there's actually a change to avoid recursive events
+                        if (displayValue !== value) {
+                            e.target.value = displayValue;
                         }
-                    }
-                    
-                    console.log('DisplayValue:', displayValue);
-                    
-                    // Update the input value if not in composition and if there's a change
-                    if (!e.target.isComposing && displayValue !== value) {
-                        console.log('Updating input value from', value, 'to', displayValue);
-                        e.target.value = displayValue;
-                    }
+                    }, 50); // 50ms debounce for responsive feel
                 });
                 
-                // Handle composition events for Chinese input method
+                // Handle composition events for Chinese input method - OPTIMIZED
                 input.addEventListener('compositionstart', (e) => {
-                    console.log('Composition started');
                     e.target.isComposing = true;
                 });
                 
                 input.addEventListener('compositionend', (e) => {
-                    console.log('Composition ended');
                     e.target.isComposing = false;
-                    // Trigger input event to convert to Chinese display
-                    e.target.dispatchEvent(new Event('input'));
+                    // Process the final composition result
+                    const displayValue = this.convertToDisplayValue(e.target.value);
+                    if (displayValue !== e.target.value) {
+                        e.target.value = displayValue;
+                    }
                 });
                 
-                // Ensure input is focused and ready
-                input.addEventListener('focus', (e) => {
-                    console.log('Input focused');
+                // Simplified focus/blur handlers - OPTIMIZED
+                input.addEventListener('focus', () => {
+                    // Input is now focused and ready
                 });
                 
-                input.addEventListener('blur', (e) => {
-                    console.log('Input blurred');
+                input.addEventListener('blur', () => {
+                    // Clear any pending timeouts when input loses focus
+                    clearTimeout(inputTimeout);
                 });
+            }
+
+            // OPTIMIZED: Fast conversion function with minimal overhead
+            convertToDisplayValue(value) {
+                if (!value) return '';
+                
+                let result = '';
+                for (let i = 0; i < value.length; i++) {
+                    const char = value[i];
+                    
+                    // Check if it's already a Chinese radical (keep as-is)
+                    if (this.chineseToEnglish[char]) {
+                        result += char;
+                    }
+                    // Check if it's an English letter (convert to Chinese radical)
+                    else if (char >= 'A' && char <= 'Z') {
+                        result += this.keyDescriptions[char] || char;
+                    }
+                    else if (char >= 'a' && char <= 'z') {
+                        const upperChar = char.toUpperCase();
+                        result += this.keyDescriptions[upperChar] || char;
+                    }
+                    // Keep other characters as-is
+                    else {
+                        result += char;
+                    }
+                }
+                
+                return result;
             }
 
             convertToCharacter() {
@@ -1154,7 +1168,6 @@
                 this.currentQuestionIndex = 0;
 
                 // Always generate fresh questions at runtime every time level is selected
-                console.log(`Generating fresh random questions for Level ${level}...`);
                 this.generateQuestionsForLevel(level);
 
                 // Update level buttons
@@ -1190,12 +1203,6 @@
 
                 const question = levelData.questions[this.currentQuestionIndex % levelData.questions.length];
                 
-                console.log('=== GENERATE QUESTION DEBUG ===');
-                console.log('Level:', this.currentLevel);
-                console.log('Question index:', this.currentQuestionIndex);
-                console.log('Total questions:', levelData.questions.length);
-                console.log('Current question:', question);
-                
                 document.getElementById('question-char').textContent = question.char;
                 document.getElementById('question-hint').textContent = question.hint;
                 document.getElementById('cangjie-input').value = '';
@@ -1210,30 +1217,23 @@
             }
 
             convertInputToEnglishCodes(input) {
-                console.log('=== CONVERT INPUT DEBUG ===');
-                console.log('Input to convert:', input);
+                // OPTIMIZED: Fast conversion with minimal overhead
+                if (!input) return '';
                 
                 let result = '';
-                for (let char of input) {
-                    console.log('Processing char:', char);
+                for (let i = 0; i < input.length; i++) {
+                    const char = input[i];
                     
                     if (this.chineseToEnglish[char]) {
-                        const englishCode = this.chineseToEnglish[char];
-                        console.log('- Chinese radical found:', char, '→', englishCode);
-                        result += englishCode;
-                    } else if (/[A-Z]/.test(char)) {
-                        console.log('- English letter found:', char);
+                        result += this.chineseToEnglish[char];
+                    } else if (char >= 'A' && char <= 'Z') {
                         result += char;
-                    } else if (/[a-z]/.test(char)) {
-                        const upperChar = char.toUpperCase();
-                        console.log('- Lowercase English letter found:', char, '→', upperChar);
-                        result += upperChar;
-                    } else {
-                        console.log('- Character skipped:', char);
+                    } else if (char >= 'a' && char <= 'z') {
+                        result += char.toUpperCase();
                     }
+                    // Skip other characters (spaces, punctuation, etc.)
                 }
                 
-                console.log('Final result:', result);
                 return result;
             }
 
@@ -1242,32 +1242,18 @@
                 const levelData = this.gameData[this.currentLevel];
                 const currentQuestion = levelData.questions[this.currentQuestionIndex % levelData.questions.length];
 
-                console.log('=== SUBMIT ANSWER DEBUG ===');
-                console.log('User input:', userInput);
-                console.log('Current question:', currentQuestion);
-                console.log('Expected character:', currentQuestion.char);
-                console.log('Expected code:', currentQuestion.code);
-
                 this.totalQuestions++;
                 
                 // Direct Chinese character comparison - check if user input matches the target character
                 if (userInput === currentQuestion.char) {
-                    console.log('✅ Match: Direct character comparison successful');
                     this.handleCorrectAnswer();
                 } else {
                     // Also check if user input is the Cangjie code in Chinese radicals
                     const normalizedInput = this.convertInputToEnglishCodes(userInput);
-                    console.log('Normalized input (English codes):', normalizedInput);
                     
                     if (normalizedInput === currentQuestion.code) {
-                        console.log('✅ Match: Cangjie code comparison successful');
                         this.handleCorrectAnswer();
                     } else {
-                        console.log('❌ No match found');
-                        console.log('- User input:', userInput);
-                        console.log('- Normalized:', normalizedInput);
-                        console.log('- Expected char:', currentQuestion.char);
-                        console.log('- Expected code:', currentQuestion.code);
                         this.handleIncorrectAnswer(currentQuestion.code, currentQuestion.char);
                     }
                 }
@@ -1282,8 +1268,6 @@
             }
 
             handleCorrectAnswer() {
-                console.log('=== HANDLE CORRECT ANSWER ===');
-                
                 this.correctAnswers++;
                 this.streak++;
                 this.maxStreak = Math.max(this.maxStreak, this.streak);
@@ -1296,27 +1280,17 @@
 
                 this.score += points;
 
-                console.log('Points awarded:', points);
-                console.log('Total score:', this.score);
-                console.log('Streak:', this.streak);
-
                 // Show feedback
                 const feedback = document.getElementById('feedback');
                 feedback.textContent = `正確！+${points}分`;
                 feedback.className = 'feedback correct';
                 feedback.classList.remove('hidden');
-                
-                console.log('Feedback shown:', feedback.textContent);
 
                 // Check for level unlock
                 this.checkLevelUnlock();
             }
 
             handleIncorrectAnswer(correctCode, correctChar) {
-                console.log('=== HANDLE INCORRECT ANSWER ===');
-                console.log('Correct code:', correctCode);
-                console.log('Correct character:', correctChar);
-                
                 this.streak = 0;
 
                 // Show feedback with both code and character
@@ -1325,8 +1299,6 @@
                 feedback.textContent = `錯誤！正確答案是：${correctChar} (倉頡碼: ${radicals})`;
                 feedback.className = 'feedback incorrect';
                 feedback.classList.remove('hidden');
-                
-                console.log('Feedback shown:', feedback.textContent);
             }
 
             convertCodeToRadicals(code) {
