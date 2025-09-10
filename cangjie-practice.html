@@ -230,32 +230,6 @@
             transition: width 0.3s ease;
         }
 
-        .cangjie-keyboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .key-button {
-            padding: 15px 10px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .key-button:hover {
-            background: #f0f0f0;
-            border-color: #4834d4;
-        }
-
         .test-mode {
             position: fixed;
             top: 20px;
@@ -366,16 +340,6 @@
             .level-selector {
                 grid-template-columns: 1fr;
                 gap: 10px;
-            }
-
-            .cangjie-keyboard {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 8px;
-            }
-
-            .key-button {
-                padding: 12px 8px;
-                font-size: 1rem;
             }
         }
 
@@ -507,23 +471,17 @@
 
                 <div class="input-area">
                     <input type="text" class="cangjie-input" id="cangjie-input" 
-                           placeholder="輸入中文字或倉頡部首" 
-                           maxlength="15"
+                           placeholder="輸入中文字" 
+                           maxlength="5"
                            lang="zh-TW"
                            inputmode="text">
                     <div style="font-size: 0.9rem; color: #666; margin: 10px 0;">
-                        💡 可輸入中文字 (如: 明) 或倉頡部首 (如: 日月)<br>
-                        ⌨️ 按<strong>空白鍵</strong>可將倉頡碼轉換為對應的中文字
+                        💡 直接輸入中文字 (如: 明, 休, 好)
                     </div>
                     <br>
                     <button class="submit-btn" id="submit-btn">提交答案</button>
                     <button class="submit-btn skip-btn" id="skip-btn">跳過</button>
                     <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
-                </div>
-
-                <!-- Cangjie Keyboard -->
-                <div class="cangjie-keyboard" id="cangjie-keyboard">
-                    <!-- Will be populated by JavaScript -->
                 </div>
 
                 <div class="progress-bar">
@@ -576,7 +534,6 @@
                 // Initialize display
                 this.updateDisplay();
                 this.generateQuestion();
-                this.createCangjieKeyboard();
             }
 
             initializeGameData() {
@@ -775,120 +732,16 @@
                 const shuffleBtn = document.getElementById('shuffle-btn');
                 const input = document.getElementById('cangjie-input');
 
-                submitBtn.addEventListener('click', () => {
-                    console.log('Submit button clicked');
-                    const inputValue = document.getElementById('cangjie-input').value;
-                    console.log('Input value at submit:', inputValue);
-                    if (inputValue.trim() === '') {
-                        console.warn('Empty input detected!');
-                        return;
-                    }
-                    this.submitAnswer();
-                });
+                submitBtn.addEventListener('click', () => this.submitAnswer());
                 skipBtn.addEventListener('click', () => this.skipQuestion());
                 shuffleBtn.addEventListener('click', () => this.shuffleCurrentLevel());
 
+                // Simple input handling - no complex conversion
                 input.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         this.submitAnswer();
-                    } else if (e.key === ' ') {
-                        e.preventDefault(); // Prevent space from being added to input
-                        this.convertToCharacter();
                     }
                 });
-
-                // Handle Chinese input method and display Chinese characters only - OPTIMIZED
-                let inputTimeout;
-                input.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    let displayValue = '';
-                    
-                    console.log('Input event triggered, value:', value, 'isComposing:', e.target.isComposing);
-                    
-                    for (let char of value) {
-                        if (this.chineseToEnglish[char]) {
-                            // Keep Chinese characters as is for display
-                            displayValue += char;
-                        } else if (/[a-zA-Z]/.test(char)) {
-                            // Convert English letters to Chinese radicals for display
-                            const upperChar = char.toUpperCase();
-                            if (this.keyDescriptions[upperChar]) {
-                                displayValue += this.keyDescriptions[upperChar];
-                            } else {
-                                // Keep unrecognized letters as is for now
-                                displayValue += char;
-                            }
-                        } else {
-                            // Keep other characters (numbers, punctuation, etc.) as is
-                            displayValue += char;
-                        }
-                    }
-                    
-                    console.log('DisplayValue:', displayValue);
-                    
-                    // Update the input value if not in composition and if there's a change
-                    if (!e.target.isComposing && displayValue !== value) {
-                        console.log('Updating input value from', value, 'to', displayValue);
-                        e.target.value = displayValue;
-                    }
-                });
-                
-                // Handle composition events for Chinese input method - OPTIMIZED
-                input.addEventListener('compositionstart', (e) => {
-                    e.target.isComposing = true;
-                });
-                
-                input.addEventListener('compositionend', (e) => {
-                    e.target.isComposing = false;
-                    // Process the final composition result
-                    const displayValue = this.convertToDisplayValue(e.target.value);
-                    if (displayValue !== e.target.value) {
-                        e.target.value = displayValue;
-                    }
-                });
-                
-                // Ensure input is focused and ready
-                input.addEventListener('focus', (e) => {
-                    console.log('Input focused');
-                });
-                
-                input.addEventListener('blur', (e) => {
-                    console.log('Input blurred');
-                });
-            }
-
-            convertToCharacter() {
-                const input = document.getElementById('cangjie-input');
-                const currentInput = input.value;
-                
-                // Convert displayed Chinese radicals to English codes for lookup
-                const codes = this.convertInputToEnglishCodes(currentInput);
-                
-                // Look up the character for these codes
-                if (this.codeToCharacter[codes]) {
-                    // Replace the input with the actual Chinese character
-                    input.value = this.codeToCharacter[codes];
-                    
-                    // Show feedback about the conversion
-                    const feedback = document.getElementById('feedback');
-                    feedback.textContent = `${currentInput} → ${codes} → ${this.codeToCharacter[codes]}`;
-                    feedback.className = 'feedback correct';
-                    feedback.classList.remove('hidden');
-                    
-                    setTimeout(() => {
-                        feedback.classList.add('hidden');
-                    }, 2000);
-                } else {
-                    // Show message if no character found
-                    const feedback = document.getElementById('feedback');
-                    feedback.textContent = `找不到對應的漢字：${currentInput} (${codes})`;
-                    feedback.className = 'feedback incorrect';
-                    feedback.classList.remove('hidden');
-                    
-                    setTimeout(() => {
-                        feedback.classList.add('hidden');
-                    }, 2000);
-                }
             }
 
             setupTestMode() {
@@ -998,28 +851,6 @@
                 setTimeout(() => {
                     feedback.classList.add('hidden');
                 }, 2000);
-            }
-
-            createCangjieKeyboard() {
-                const keyboard = document.getElementById('cangjie-keyboard');
-                keyboard.innerHTML = '';
-
-                // Create Chinese radical buttons for display
-                this.cangjieKeys.forEach(key => {
-                    const button = document.createElement('button');
-                    button.className = 'key-button';
-                    const chineseRadical = this.keyDescriptions[key];
-                    button.innerHTML = `<div style="font-size: 1.3rem;">${chineseRadical}</div><small>${key}</small>`;
-                    button.addEventListener('click', () => {
-                        const input = document.getElementById('cangjie-input');
-                        if (input.value.length < 15) {
-                            input.value += chineseRadical;
-                            // Trigger input event to handle any conversions
-                            input.dispatchEvent(new Event('input'));
-                        }
-                    });
-                    keyboard.appendChild(button);
-                });
             }
 
             generateQuestionsForLevel(level) {
@@ -1183,6 +1014,7 @@
                 this.currentQuestionIndex = 0;
 
                 // Always generate fresh questions at runtime every time level is selected
+                console.log(`Generating fresh random questions for Level ${level}...`);
                 this.generateQuestionsForLevel(level);
 
                 // Update level buttons
@@ -1229,30 +1061,15 @@
             }
 
             convertInputToEnglishCodes(input) {
-                console.log('=== CONVERT INPUT DEBUG ===');
-                console.log('Input to convert:', input);
-                
                 let result = '';
                 for (let char of input) {
-                    console.log('Processing char:', char);
-                    
                     if (this.chineseToEnglish[char]) {
-                        const englishCode = this.chineseToEnglish[char];
-                        console.log('- Chinese radical found:', char, '→', englishCode);
-                        result += englishCode;
+                        result += this.chineseToEnglish[char];
                     } else if (/[A-Z]/.test(char)) {
-                        console.log('- English letter found:', char);
                         result += char;
-                    } else if (/[a-z]/.test(char)) {
-                        const upperChar = char.toUpperCase();
-                        console.log('- Lowercase English letter found:', char, '→', upperChar);
-                        result += upperChar;
-                    } else {
-                        console.log('- Character skipped:', char);
                     }
+                    // Skip other characters
                 }
-                
-                console.log('Final result:', result);
                 return result;
             }
 
@@ -1269,8 +1086,6 @@
                 } else {
                     // Also check if user input is the Cangjie code in Chinese radicals
                     const normalizedInput = this.convertInputToEnglishCodes(userInput);
-                    console.log('Normalized input (English codes):', normalizedInput);
-                    
                     if (normalizedInput === currentQuestion.code) {
                         this.handleCorrectAnswer();
                     } else {
