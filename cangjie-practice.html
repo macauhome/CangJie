@@ -300,6 +300,40 @@
             display: none;
         }
 
+        .cangjie-keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .key-button {
+            padding: 15px 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .key-button:hover {
+            background: #f0f0f0;
+            border-color: #4834d4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .key-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -332,6 +366,36 @@
             .stats-panel {
                 grid-template-columns: 1fr 1fr;
                 gap: 15px;
+            }
+            
+            .cangjie-keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 8px;
+            }
+            
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
+            }
+            
+            .cangjie-keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 8px;
+            }
+            
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
+            }
+            
+            .cangjie-keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 8px;
+            }
+            
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
             }
 
             .level-selector {
@@ -480,6 +544,11 @@
                     <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
                 </div>
 
+                <!-- Cangjie Keyboard -->
+                <div class="cangjie-keyboard" id="cangjie-keyboard">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                 </div>
@@ -530,6 +599,7 @@
                 // Initialize display
                 this.updateDisplay();
                 this.generateQuestion();
+                this.createCangjieKeyboard();
             }
 
             initializeGameData() {
@@ -655,7 +725,7 @@
 
                 this.keyDescriptions = {
                     'A': '日', 'B': '月', 'C': '金', 'D': '木', 'E': '水',
-                    'F': '火', 'G': '土', 'H': '竹', 'I': '戈', 'J': '鉤',
+                    'F': '火', 'G': '土', 'H': '竹', 'I': '戈', 'J': '十',
                     'K': '大', 'L': '中', 'M': '一', 'N': '弓', 'O': '人',
                     'P': '心', 'Q': '手', 'R': '口', 'S': '尸', 'T': '廿',
                     'U': '山', 'V': '女', 'W': '田', 'X': '難', 'Y': '卜', 'Z': '重'
@@ -736,6 +806,78 @@
                 input.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         this.submitAnswer();
+                    }
+                });
+                
+                // Convert English letters to Chinese radicals as user types
+                input.addEventListener('input', (e) => {
+                    let value = e.target.value;
+                    let converted = '';
+                    
+                    for (let char of value) {
+                        if (/[A-Z]/i.test(char)) {
+                            // Convert English letter to Chinese radical
+                            const upperChar = char.toUpperCase();
+                            if (this.keyDescriptions[upperChar]) {
+                                converted += this.keyDescriptions[upperChar];
+                            }
+                        } else {
+                            // Keep Chinese characters and other valid characters
+                            converted += char;
+                        }
+                    }
+                    
+                    // Update input value if conversion occurred
+                    if (converted !== value) {
+                        e.target.value = converted;
+                    }
+                });
+                
+                // Convert English letters to Chinese radicals as user types
+                input.addEventListener('input', (e) => {
+                    let value = e.target.value;
+                    let converted = '';
+                    
+                    for (let char of value) {
+                        if (/[A-Z]/i.test(char)) {
+                            // Convert English letter to Chinese radical
+                            const upperChar = char.toUpperCase();
+                            if (this.keyDescriptions[upperChar]) {
+                                converted += this.keyDescriptions[upperChar];
+                            }
+                        } else {
+                            // Keep Chinese characters and other valid characters
+                            converted += char;
+                        }
+                    }
+                    
+                    // Update input value if conversion occurred
+                    if (converted !== value) {
+                        e.target.value = converted;
+                    }
+                });
+                
+                // Convert English letters to Chinese radicals as user types
+                input.addEventListener('input', (e) => {
+                    let value = e.target.value;
+                    let converted = '';
+                    
+                    for (let char of value) {
+                        if (/[A-Z]/i.test(char)) {
+                            // Convert English letter to Chinese radical
+                            const upperChar = char.toUpperCase();
+                            if (this.keyDescriptions[upperChar]) {
+                                converted += this.keyDescriptions[upperChar];
+                            }
+                        } else {
+                            // Keep Chinese characters and other valid characters
+                            converted += char;
+                        }
+                    }
+                    
+                    // Update input value if conversion occurred
+                    if (converted !== value) {
+                        e.target.value = converted;
                     }
                 });
             }
@@ -847,6 +989,57 @@
                 setTimeout(() => {
                     feedback.classList.add('hidden');
                 }, 2000);
+            }
+
+            createCangjieKeyboard() {
+                const keyboard = document.getElementById('cangjie-keyboard');
+                keyboard.innerHTML = ''; // Clear existing content
+                
+                this.cangjieKeys.forEach(key => {
+                    const button = document.createElement('button');
+                    button.className = 'key-button';
+                    
+                    // Get Chinese radical for this key
+                    const chineseRadical = this.keyDescriptions[key];
+                    
+                    // Display Chinese radical prominently with English letter as reference
+                    button.innerHTML = `
+                        <div style="font-size: 1.3rem; color: #333;">${chineseRadical}</div>
+                        <small style="color: #666; font-size: 0.8rem;">${key}</small>
+                    `;
+                    
+                    // Add click handler
+                    button.addEventListener('click', () => {
+                        const input = document.getElementById('cangjie-input');
+                        const currentValue = input.value;
+                        
+                        // Check input limit (5 characters)
+                        if (currentValue.length < 5) {
+                            // Add Chinese radical to input
+                            input.value = currentValue + chineseRadical;
+                            
+                            // Maintain focus on input field
+                            input.focus();
+                        }
+                    });
+                    
+                    keyboard.appendChild(button);
+                });
+                
+                // Add clear button
+                const clearButton = document.createElement('button');
+                clearButton.className = 'key-button';
+                clearButton.innerHTML = `
+                    <div style="font-size: 1.1rem; color: #e74c3c;">清除</div>
+                    <small style="color: #999; font-size: 0.8rem;">Clear</small>
+                `;
+                clearButton.style.gridColumn = 'span 2';
+                clearButton.addEventListener('click', () => {
+                    const input = document.getElementById('cangjie-input');
+                    input.value = '';
+                    input.focus();
+                });
+                keyboard.appendChild(clearButton);
             }
 
             generateQuestionsForLevel(level) {
