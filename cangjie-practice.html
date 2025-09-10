@@ -147,10 +147,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .question-hint {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
+
 
         .input-area {
             margin-bottom: 30px;
@@ -303,38 +300,6 @@
             display: none;
         }
 
-        .cangjie-keyboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .key-button {
-            padding: 15px 10px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .key-button:hover {
-            background: #f0f0f0;
-            border-color: #4834d4;
-            transform: translateY(-2px);
-        }
-
-        .key-button:active {
-            transform: translateY(0);
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -372,16 +337,6 @@
             .level-selector {
                 grid-template-columns: 1fr;
                 gap: 10px;
-            }
-
-            .cangjie-keyboard {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 8px;
-            }
-
-            .key-button {
-                padding: 12px 8px;
-                font-size: 1rem;
             }
         }
 
@@ -508,7 +463,6 @@
             <div class="game-area">
                 <div class="question-card">
                     <div class="question-text" id="question-char">一</div>
-                    <div class="question-hint" id="question-hint">請輸入此字的倉頡碼</div>
                 </div>
 
                 <div class="input-area">
@@ -524,11 +478,6 @@
                     <button class="submit-btn" id="submit-btn">提交答案</button>
                     <button class="submit-btn skip-btn" id="skip-btn">跳過</button>
                     <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
-                </div>
-
-                <!-- Cangjie Keyboard -->
-                <div class="cangjie-keyboard" id="cangjie-keyboard">
-                    <!-- Will be populated by JavaScript -->
                 </div>
 
                 <div class="progress-bar">
@@ -581,7 +530,6 @@
                 // Initialize display
                 this.updateDisplay();
                 this.generateQuestion();
-                this.createCangjieKeyboard();
             }
 
             initializeGameData() {
@@ -591,104 +539,104 @@
                         name: "基礎部首",
                         description: "學習常用部首的倉頡碼",
                         questions: [
-                            {char: "一", code: "M", hint: "橫 (M)"},
-                            {char: "丨", code: "L", hint: "豎 (L)"},
-                            {char: "丿", code: "N", hint: "撇 (N)"},
-                            {char: "丶", code: "Y", hint: "點 (Y)"},
-                            {char: "口", code: "R", hint: "口 (R)"},
-                            {char: "日", code: "A", hint: "日 (A)"},
-                            {char: "月", code: "B", hint: "月 (B)"},
-                            {char: "木", code: "D", hint: "木 (D)"},
-                            {char: "水", code: "E", hint: "水 (E)"},
-                            {char: "火", code: "F", hint: "火 (F)"},
-                            {char: "土", code: "G", hint: "土 (G)"},
-                            {char: "竹", code: "H", hint: "竹 (H)"},
-                            {char: "戈", code: "I", hint: "戈 (I)"},
-                            {char: "金", code: "C", hint: "金 (C)"},
-                            {char: "人", code: "O", hint: "人 (O)"},
-                            {char: "大", code: "K", hint: "大 (K)"},
-                            {char: "心", code: "P", hint: "心 (P)"},
-                            {char: "手", code: "Q", hint: "手 (Q)"},
-                            {char: "山", code: "U", hint: "山 (U)"},
-                            {char: "女", code: "V", hint: "女 (V)"}
+                            {char: "一", code: "M"},
+                            {char: "丨", code: "L"},
+                            {char: "丿", code: "N"},
+                            {char: "丶", code: "Y"},
+                            {char: "口", code: "R"},
+                            {char: "日", code: "A"},
+                            {char: "月", code: "B"},
+                            {char: "木", code: "D"},
+                            {char: "水", code: "E"},
+                            {char: "火", code: "F"},
+                            {char: "土", code: "G"},
+                            {char: "竹", code: "H"},
+                            {char: "戈", code: "I"},
+                            {char: "金", code: "C"},
+                            {char: "人", code: "O"},
+                            {char: "大", code: "K"},
+                            {char: "心", code: "P"},
+                            {char: "手", code: "Q"},
+                            {char: "山", code: "U"},
+                            {char: "女", code: "V"}
                         ]
                     },
                     2: { // Level 2: Two-radical combinations
                         name: "雙部首組合",
                         description: "兩個部首組合的簡單漢字",
                         questions: [
-                            {char: "二", code: "MM", hint: "橫橫 (MM)"},
-                            {char: "三", code: "MMM", hint: "橫橫橫 (MMM)"},
-                            {char: "十", code: "JX", hint: "十難 (JX)"},
-                            {char: "丁", code: "MN", hint: "橫撇 (MN)"},
-                            {char: "七", code: "JU", hint: "十山 (JU)"},
-                            {char: "九", code: "KN", hint: "大撇 (KN)"},
-                            {char: "八", code: "HO", hint: "竹人 (HO)"},
-                            {char: "入", code: "OY", hint: "人點 (OY)"},
-                            {char: "上", code: "YM", hint: "點橫 (YM)"},
-                            {char: "下", code: "MY", hint: "橫點 (MY)"},
-                            {char: "了", code: "VN", hint: "女撇 (VN)"},
-                            {char: "小", code: "NC", hint: "撇金 (NC)"},
-                            {char: "工", code: "MLM", hint: "橫中橫 (MLM)"},
-                            {char: "士", code: "JM", hint: "十橫 (JM)"},
-                            {char: "王", code: "MG", hint: "橫土 (MG)"},
-                            {char: "力", code: "KS", hint: "大尸 (KS)"},
-                            {char: "又", code: "CK", hint: "金大 (CK)"},
-                            {char: "刀", code: "SH", hint: "尸竹 (SH)"},
-                            {char: "子", code: "ND", hint: "撇木 (ND)"},
-                            {char: "中", code: "L", hint: "中 (L)"}
+                            {char: "二", code: "MM"},
+                            {char: "三", code: "MMM"},
+                            {char: "十", code: "JX"},
+                            {char: "丁", code: "MN"},
+                            {char: "七", code: "JU"},
+                            {char: "九", code: "KN"},
+                            {char: "八", code: "HO"},
+                            {char: "入", code: "OY"},
+                            {char: "上", code: "YM"},
+                            {char: "下", code: "MY"},
+                            {char: "了", code: "VN"},
+                            {char: "小", code: "NC"},
+                            {char: "工", code: "MLM"},
+                            {char: "士", code: "JM"},
+                            {char: "王", code: "MG"},
+                            {char: "力", code: "KS"},
+                            {char: "又", code: "CK"},
+                            {char: "刀", code: "SH"},
+                            {char: "子", code: "ND"},
+                            {char: "中", code: "L"}
                         ]
                     },
                     3: { // Level 3: Three-radical combinations
                         name: "三部首組合",
                         description: "三個部首組合的常用字",
                         questions: [
-                            {char: "明", code: "AB", hint: "日月 (AB)"},
-                            {char: "林", code: "DD", hint: "木木 (DD)"},
-                            {char: "好", code: "VND", hint: "女撇木 (VND)"},
-                            {char: "休", code: "OD", hint: "人木 (OD)"},
-                            {char: "不", code: "MF", hint: "橫火 (MF)"},
-                            {char: "門", code: "AN", hint: "日撇 (AN)"},
-                            {char: "左", code: "KD", hint: "大木 (KD)"},
-                            {char: "右", code: "KR", hint: "大口 (KR)"},
-                            {char: "和", code: "HD", hint: "竹木 (HD)"},
-                            {char: "可", code: "RK", hint: "口大 (RK)"},
-                            {char: "去", code: "GMU", hint: "土橫山 (GMU)"},
-                            {char: "只", code: "RQ", hint: "口手 (RQ)"},
-                            {char: "再", code: "MML", hint: "橫橫中 (MML)"},
-                            {char: "也", code: "PD", hint: "心木 (PD)"},
-                            {char: "都", code: "NL", hint: "撇中 (NL)"},
-                            {char: "在", code: "GMI", hint: "土橫戈 (GMI)"},
-                            {char: "有", code: "EQM", hint: "水手橫 (EQM)"},
-                            {char: "多", code: "NY", hint: "撇點 (NY)"},
-                            {char: "少", code: "NC", hint: "撇金 (NC)"},
-                            {char: "才", code: "FQ", hint: "火手 (FQ)"}
+                            {char: "明", code: "AB"},
+                            {char: "林", code: "DD"},
+                            {char: "好", code: "VND"},
+                            {char: "休", code: "OD"},
+                            {char: "不", code: "MF"},
+                            {char: "門", code: "AN"},
+                            {char: "左", code: "KD"},
+                            {char: "右", code: "KR"},
+                            {char: "和", code: "HD"},
+                            {char: "可", code: "RK"},
+                            {char: "去", code: "GMU"},
+                            {char: "只", code: "RQ"},
+                            {char: "再", code: "MML"},
+                            {char: "也", code: "PD"},
+                            {char: "都", code: "NL"},
+                            {char: "在", code: "GMI"},
+                            {char: "有", code: "EQM"},
+                            {char: "多", code: "NY"},
+                            {char: "少", code: "NC"},
+                            {char: "才", code: "FQ"}
                         ]
                     },
                     4: { // Level 4: Complex four+ radical combinations
                         name: "複雜組合",
                         description: "四個以上部首組合的複雜漢字",
                         questions: [
-                            {char: "信", code: "OKMR", hint: "人大橫口 (OKMR)"},
-                            {char: "他", code: "OJBD", hint: "人十月木 (OJBD)"},
-                            {char: "你", code: "OJKL", hint: "人十大中 (OJKL)"},
-                            {char: "我", code: "HQNI", hint: "竹手撇戈 (HQNI)"},
-                            {char: "的", code: "WLJR", hint: "田中十口 (WLJR)"},
-                            {char: "是", code: "AMYO", hint: "日橫女人 (AMYO)"},
-                            {char: "來", code: "DOI", hint: "木人戈 (DOI)"},
-                            {char: "到", code: "SHLN", hint: "尸竹中撇 (SHLN)"},
-                            {char: "雨", code: "MWBY", hint: "橫田月點 (MWBY)"},
-                            {char: "學", code: "BBGF", hint: "月月土火 (BBGF)"},
-                            {char: "時", code: "AFBR", hint: "日火月口 (AFBR)"},
-                            {char: "會", code: "OMWA", hint: "人橫田日 (OMWA)"},
-                            {char: "只", code: "RQ", hint: "口手 (RQ)"},
-                            {char: "那", code: "NANI", hint: "撇日撇戈 (NANI)"},
-                            {char: "這", code: "YMCW", hint: "點橫金田 (YMCW)"},
-                            {char: "可", code: "RK", hint: "口大 (RK)"},
-                            {char: "能", code: "BHNF", hint: "月竹撇火 (BHNF)"},
-                            {char: "說", code: "YRYTU", hint: "點口點戶山 (YRYTU)"},
-                            {char: "看", code: "HQBU", hint: "竹手月山 (HQBU)"},
-                            {char: "知", code: "YMDI", hint: "點橫木戈 (YMDI)"}
+                            {char: "信", code: "OKMR"},
+                            {char: "他", code: "OJBD"},
+                            {char: "你", code: "OJKL"},
+                            {char: "我", code: "HQNI"},
+                            {char: "的", code: "WLJR"},
+                            {char: "是", code: "AMYO"},
+                            {char: "來", code: "DOI"},
+                            {char: "到", code: "SHLN"},
+                            {char: "雨", code: "MWBY"},
+                            {char: "學", code: "BBGF"},
+                            {char: "時", code: "AFBR"},
+                            {char: "會", code: "OMWA"},
+                            {char: "那", code: "NANI"},
+                            {char: "這", code: "YMCW"},
+                            {char: "能", code: "BHNF"},
+                            {char: "說", code: "YRYTU"},
+                            {char: "看", code: "HQBU"},
+                            {char: "知", code: "YMDI"},
+                            {char: "情", code: "PTQL"},
+                            {char: "想", code: "DQUP"}
                         ]
                     },
                     5: { // Level 5: Master challenge
@@ -901,27 +849,6 @@
                 }, 2000);
             }
 
-            createCangjieKeyboard() {
-                const keyboard = document.getElementById('cangjie-keyboard');
-                keyboard.innerHTML = '';
-
-                // Create Chinese radical buttons for display
-                this.cangjieKeys.forEach(key => {
-                    const button = document.createElement('button');
-                    button.className = 'key-button';
-                    const chineseRadical = this.keyDescriptions[key];
-                    button.innerHTML = `<div style="font-size: 1.3rem; color: #333;">${chineseRadical}</div><small style="color: #666; font-size: 0.8rem;">${key}</small>`;
-                    button.addEventListener('click', () => {
-                        const input = document.getElementById('cangjie-input');
-                        if (input.value.length < 5) {
-                            input.value += chineseRadical;
-                            input.focus();
-                        }
-                    });
-                    keyboard.appendChild(button);
-                });
-            }
-
             generateQuestionsForLevel(level) {
                 // Generate fresh questions at runtime every time
                 const questionCount = level === 5 ? 25 : 12; // Increased question count
@@ -949,11 +876,6 @@
                     mixedQuestions.push(...this.generateRandomComplexCombinations(8));
                     this.gameData[level].questions = mixedQuestions;
                 }
-                
-                // Add hints to all questions
-                this.gameData[level].questions.forEach(q => {
-                    q.hint = this.generateHint(q.char, q.code);
-                });
                 
                 // Update code-to-character mapping
                 this.updateCodeToCharacterMapping();
@@ -1066,15 +988,7 @@
                 return shuffled.slice(0, Math.min(count, shuffled.length));
             }
 
-            generateHint(char, code) {
-                let radicalNames = '';
-                for (let c of code) {
-                    if (this.keyDescriptions[c]) {
-                        radicalNames += this.keyDescriptions[c];
-                    }
-                }
-                return `${radicalNames} (${code})`;
-            }
+
 
             selectLevel(level) {
                 if (level > this.getUnlockedLevel()) return;
@@ -1117,7 +1031,6 @@
                 const question = levelData.questions[this.currentQuestionIndex % levelData.questions.length];
                 
                 document.getElementById('question-char').textContent = question.char;
-                document.getElementById('question-hint').textContent = question.hint;
                 document.getElementById('cangjie-input').value = '';
                 document.getElementById('cangjie-input').focus();
 
