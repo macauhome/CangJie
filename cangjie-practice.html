@@ -935,7 +935,7 @@
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 1500);
+                }, 800);
             }
 
             updateTestModeButtons() {
@@ -988,7 +988,7 @@
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 2000);
+                }, 500);
             }
 
             createCangjieKeyboard() {
@@ -1214,7 +1214,7 @@
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 2000);
+                }, 800);
             }
 
             generateQuestion() {
@@ -1271,10 +1271,13 @@
                 this.updateDisplay();
                 this.saveProgress();
 
-                // Move to next question after delay
-                setTimeout(() => {
+                // Allow immediate next question with Enter key or by clicking feedback
+                this.enableQuickAdvance();
+
+                // Move to next question after shorter delay
+                this.nextQuestionTimer = setTimeout(() => {
                     this.nextQuestion();
-                }, 2000);
+                }, 800);
             }
 
             handleCorrectAnswer() {
@@ -1336,10 +1339,51 @@
 
                 setTimeout(() => {
                     this.nextQuestion();
-                }, 2000);
+                }, 800);
+            }
+
+            enableQuickAdvance() {
+                // Allow pressing Enter or clicking feedback to advance immediately
+                const feedback = document.getElementById('feedback');
+                const input = document.getElementById('cangjie-input');
+                
+                // Add click handler to feedback for immediate advance
+                const quickAdvanceHandler = () => {
+                    if (this.nextQuestionTimer) {
+                        clearTimeout(this.nextQuestionTimer);
+                        this.nextQuestionTimer = null;
+                    }
+                    this.nextQuestion();
+                    // Clean up event listeners
+                    feedback.removeEventListener('click', quickAdvanceHandler);
+                    document.removeEventListener('keydown', keyAdvanceHandler);
+                };
+                
+                // Add keydown handler for immediate advance with Enter
+                const keyAdvanceHandler = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        quickAdvanceHandler();
+                    }
+                };
+                
+                feedback.addEventListener('click', quickAdvanceHandler);
+                document.addEventListener('keydown', keyAdvanceHandler);
+                
+                // Auto-remove listeners after timeout
+                setTimeout(() => {
+                    feedback.removeEventListener('click', quickAdvanceHandler);
+                    document.removeEventListener('keydown', keyAdvanceHandler);
+                }, 800);
             }
 
             nextQuestion() {
+                // Clear any pending timers
+                if (this.nextQuestionTimer) {
+                    clearTimeout(this.nextQuestionTimer);
+                    this.nextQuestionTimer = null;
+                }
+                
                 this.currentQuestionIndex++;
                 this.generateQuestion();
             }
@@ -1467,7 +1511,7 @@
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 1500);
+                }, 800);
             }
 
             shuffleArray(array) {
