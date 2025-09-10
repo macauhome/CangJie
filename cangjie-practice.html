@@ -303,6 +303,38 @@
             display: none;
         }
 
+        .cangjie-keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .key-button {
+            padding: 15px 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .key-button:hover {
+            background: #f0f0f0;
+            border-color: #4834d4;
+            transform: translateY(-2px);
+        }
+
+        .key-button:active {
+            transform: translateY(0);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -340,6 +372,16 @@
             .level-selector {
                 grid-template-columns: 1fr;
                 gap: 10px;
+            }
+
+            .cangjie-keyboard {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
             }
         }
 
@@ -484,6 +526,11 @@
                     <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
                 </div>
 
+                <!-- Cangjie Keyboard -->
+                <div class="cangjie-keyboard" id="cangjie-keyboard">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                 </div>
@@ -534,6 +581,7 @@
                 // Initialize display
                 this.updateDisplay();
                 this.generateQuestion();
+                this.createCangjieKeyboard();
             }
 
             initializeGameData() {
@@ -851,6 +899,27 @@
                 setTimeout(() => {
                     feedback.classList.add('hidden');
                 }, 2000);
+            }
+
+            createCangjieKeyboard() {
+                const keyboard = document.getElementById('cangjie-keyboard');
+                keyboard.innerHTML = '';
+
+                // Create Chinese radical buttons for display
+                this.cangjieKeys.forEach(key => {
+                    const button = document.createElement('button');
+                    button.className = 'key-button';
+                    const chineseRadical = this.keyDescriptions[key];
+                    button.innerHTML = `<div style="font-size: 1.3rem; color: #333;">${chineseRadical}</div><small style="color: #666; font-size: 0.8rem;">${key}</small>`;
+                    button.addEventListener('click', () => {
+                        const input = document.getElementById('cangjie-input');
+                        if (input.value.length < 5) {
+                            input.value += chineseRadical;
+                            input.focus();
+                        }
+                    });
+                    keyboard.appendChild(button);
+                });
             }
 
             generateQuestionsForLevel(level) {
