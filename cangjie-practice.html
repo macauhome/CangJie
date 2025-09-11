@@ -544,17 +544,16 @@
                     <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
                 </div>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                </div>
-
-                <div class="feedback hidden" id="feedback"></div>
-
                 <!-- Cangjie Keyboard -->
                 <div class="cangjie-keyboard" id="cangjie-keyboard">
                     <!-- Will be populated by JavaScript -->
                 </div>
 
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+
+                <div class="feedback hidden" id="feedback"></div>
             </div>
         </div>
     </div>
@@ -1045,7 +1044,7 @@
 
             generateQuestionsForLevel(level) {
                 // Generate fresh questions at runtime every time
-                const questionCount = level === 5 ? 25 : 12; // Increased question count
+                const questionCount = level === 5 ? 25 : (level === 4 ? 18 : 12); // More questions for Level 4 challenge
                 this.gameData[level].questions = [];
                 
                 if (level === 1) {
@@ -1139,28 +1138,57 @@
             }
 
             generateRandomComplexCombinations(count) {
-                // Expanded pool of complex 4+ radical combinations for random selection
+                // Significantly expanded pool of very complex 4+ radical combinations for challenging practice
                 const complexPool = [
+                    // 4-code complex characters
                     {char: '信', code: 'OKMR'}, {char: '他', code: 'OJBD'}, {char: '我', code: 'HQNI'},
                     {char: '的', code: 'WLJR'}, {char: '是', code: 'AMYO'}, {char: '來', code: 'DOI'},
                     {char: '雨', code: 'MWBY'}, {char: '學', code: 'BBGF'}, {char: '時', code: 'AFBR'},
-                    {char: '會', code: 'OMWA'}, {char: '能', code: 'BHNF'}, {char: '說', code: 'YRYTU'},
-                    {char: '看', code: 'HQBU'}, {char: '知', code: 'YMDI'}, {char: '道', code: 'YTCSH'},
-                    {char: '開', code: 'JJKA'}, {char: '關', code: 'ANMG'}, {char: '那', code: 'NANI'},
-                    {char: '這', code: 'YMCW'}, {char: '習', code: 'SMFF'}, {char: '表', code: 'MWLV'},
-                    {char: '電', code: 'JRWC'}, {char: '話', code: 'YRNR'}, {char: '書', code: 'AMII'},
-                    {char: '字', code: 'JCND'}, {char: '寫', code: 'UMCJ'}, {char: '讀', code: 'YRGHU'},
-                    {char: '聲', code: 'GASR'}, {char: '音', code: 'YAV'}, {char: '意', code: 'YISP'},
-                    {char: '思', code: 'LNP'}, {char: '想', code: 'DXNO'}, {char: '記', code: 'YROK'},
-                    {char: '事', code: 'JLB'}, {char: '情', code: 'PTQL'}, {char: '理', code: 'MGJM'},
-                    {char: '當', code: 'JREC'}, {char: '然', code: 'YOAF'}, {char: '結', code: 'VFGK'},
-                    {char: '果', code: 'WDMVM'}, {char: '原', code: 'MWMBO'}, {char: '因', code: 'WK'},
-                    {char: '題', code: 'MBNB'}, {char: '問', code: 'ANR'}, {char: '答', code: 'HTCO'},
-                    {char: '案', code: 'MTAJ'}, {char: '法', code: 'EIJR'}, {char: '方', code: 'YSHML'},
-                    {char: '式', code: 'IROK'}, {char: '種', code: 'HDTJR'}, {char: '類', code: 'HXOOO'},
-                    {char: '樣', code: 'DYFS'}, {char: '感', code: 'TOPJ'}, {char: '覺', code: 'YBUK'},
-                    {char: '變', code: 'YOYOY'}, {char: '化', code: 'OFNHE'}, {char: '成', code: 'DHNV'},
-                    {char: '發', code: 'NLWK'}, {char: '生', code: 'HQM'}, {char: '活', code: 'EONH'}
+                    {char: '會', code: 'OMWA'}, {char: '能', code: 'BHNF'}, {char: '看', code: 'HQBU'},
+                    {char: '知', code: 'YMDI'}, {char: '開', code: 'JJKA'}, {char: '關', code: 'ANMG'},
+                    {char: '那', code: 'NANI'}, {char: '這', code: 'YMCW'}, {char: '習', code: 'SMFF'},
+                    {char: '表', code: 'MWLV'}, {char: '電', code: 'JRWC'}, {char: '話', code: 'YRNR'},
+                    {char: '書', code: 'AMII'}, {char: '字', code: 'JCND'}, {char: '寫', code: 'UMCJ'},
+                    {char: '聲', code: 'GASR'}, {char: '意', code: 'YISP'}, {char: '事', code: 'JLB'},
+                    {char: '情', code: 'PTQL'}, {char: '理', code: 'MGJM'}, {char: '當', code: 'JREC'},
+                    {char: '然', code: 'YOAF'}, {char: '結', code: 'VFGK'}, {char: '案', code: 'MTAJ'},
+                    {char: '法', code: 'EIJR'}, {char: '式', code: 'IROK'}, {char: '感', code: 'TOPJ'},
+                    {char: '成', code: 'DHNV'}, {char: '發', code: 'NLWK'}, {char: '活', code: 'EONH'},
+                    
+                    // 5-code very complex characters
+                    {char: '道', code: 'YTCSH'}, {char: '說', code: 'YRYTU'}, {char: '讀', code: 'YRGHU'},
+                    {char: '記', code: 'YROK'}, {char: '果', code: 'WDMVM'}, {char: '原', code: 'MWMBO'},
+                    {char: '題', code: 'MBNB'}, {char: '答', code: 'HTCO'}, {char: '方', code: 'YSHML'},
+                    {char: '種', code: 'HDTJR'}, {char: '類', code: 'HXOOO'}, {char: '樣', code: 'DYFS'},
+                    {char: '覺', code: 'YBUK'}, {char: '化', code: 'OFNHE'}, {char: '變', code: 'YOYOY'},
+                    
+                    // Ultra-complex 6+ code characters for extreme challenge
+                    {char: '還', code: 'YYLMO'}, {char: '職', code: 'SJRSG'}, {char: '身', code: 'HJBDY'},
+                    {char: '基', code: 'GJMMI'}, {char: '自', code: 'HXBU'}, {char: '紀', code: 'VFMHD'},
+                    {char: '教', code: 'YXOKT'}, {char: '主', code: 'YGDI'}, {char: '社', code: 'MFQMB'},
+                    {char: '政', code: 'YTOK'}, {char: '治', code: 'EITQ'}, {char: '經', code: 'VFQMC'},
+                    {char: '論', code: 'YROII'}, {char: '除', code: 'NLWLX'}, {char: '集', code: 'OOGJ'},
+                    {char: '企', code: 'OHBT'}, {char: '業', code: 'DJTWM'}, {char: '產', code: 'YSHQM'},
+                    {char: '品', code: 'KRKR'}, {char: '機', code: 'DXHHH'}, {char: '構', code: 'DIIB'},
+                    {char: '組', code: 'VFMHM'}, {char: '導', code: 'YSHVI'}, {char: '術', code: 'YMTWL'},
+                    {char: '節', code: 'HIJRR'}, {char: '研', code: 'MRMHH'}, {char: '究', code: 'JTCTJ'},
+                    
+                    // Complex technical and academic terms
+                    {char: '藝', code: 'TWNI'}, {char: '技', code: 'QRQK'}, {char: '運', code: 'YIIY'},
+                    {char: '動', code: 'KHBT'}, {char: '建', code: 'NUOG'}, {char: '設', code: 'YRGHU'},
+                    {char: '管', code: 'HRHU'}, {char: '圖', code: 'WLSJ'}, {char: '館', code: 'ANVW'},
+                    {char: '市', code: 'YLMB'}, {char: '場', code: 'GCOW'}, {char: '購', code: 'MBRUC'},
+                    {char: '買', code: 'MWLMI'}, {char: '賣', code: 'MWLB'}, {char: '價', code: 'OJKM'},
+                    
+                    // Very complex traditional characters
+                    {char: '繼', code: 'VFGKF'}, {char: '續', code: 'VFGK'}, {char: '躍', code: 'RMYBS'},
+                    {char: '議', code: 'YROGR'}, {char: '處', code: 'YKNLB'}, {char: '與', code: 'YHNNG'},
+                    {char: '戰', code: 'IELM'}, {char: '爭', code: 'LMBC'}, {char: '難', code: 'XOWJ'},
+                    {char: '問', code: 'RJRU'}, {char: '響', code: 'SJRYR'}, {char: '應', code: 'YGDI'},
+                    {char: '護', code: 'YKRHR'}, {char: '離', code: 'OGYWJ'}, {char: '關', code: 'ANMG'},
+                    {char: '環', code: 'MWLVI'}, {char: '境', code: 'GQJRR'}, {char: '態', code: 'DJHAP'},
+                    {char: '網', code: 'WLWL'}, {char: '際', code: 'NLHXC'}, {char: '線', code: 'VFHXC'},
+                    {char: '資', code: 'MWLMI'}, {char: '訊', code: 'YRHXC'}, {char: '據', code: 'QJRHR'}
                 ];
                 return this.getRandomItems(complexPool, count);
             }
@@ -1272,11 +1300,8 @@
                 this.updateDisplay();
                 this.saveProgress();
 
-                // Allow immediate next question with Enter key or by clicking feedback
-                this.enableQuickAdvance();
-
-                // Move to next question after shorter delay
-                this.nextQuestionTimer = setTimeout(() => {
+                // Move to next question after delay
+                setTimeout(() => {
                     this.nextQuestion();
                 }, 800);
             }
@@ -1343,48 +1368,7 @@
                 }, 800);
             }
 
-            enableQuickAdvance() {
-                // Allow pressing Enter or clicking feedback to advance immediately
-                const feedback = document.getElementById('feedback');
-                const input = document.getElementById('cangjie-input');
-                
-                // Add click handler to feedback for immediate advance
-                const quickAdvanceHandler = () => {
-                    if (this.nextQuestionTimer) {
-                        clearTimeout(this.nextQuestionTimer);
-                        this.nextQuestionTimer = null;
-                    }
-                    this.nextQuestion();
-                    // Clean up event listeners
-                    feedback.removeEventListener('click', quickAdvanceHandler);
-                    document.removeEventListener('keydown', keyAdvanceHandler);
-                };
-                
-                // Add keydown handler for immediate advance with Enter
-                const keyAdvanceHandler = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        quickAdvanceHandler();
-                    }
-                };
-                
-                feedback.addEventListener('click', quickAdvanceHandler);
-                document.addEventListener('keydown', keyAdvanceHandler);
-                
-                // Auto-remove listeners after timeout
-                setTimeout(() => {
-                    feedback.removeEventListener('click', quickAdvanceHandler);
-                    document.removeEventListener('keydown', keyAdvanceHandler);
-                }, 800);
-            }
-
             nextQuestion() {
-                // Clear any pending timers
-                if (this.nextQuestionTimer) {
-                    clearTimeout(this.nextQuestionTimer);
-                    this.nextQuestionTimer = null;
-                }
-                
                 this.currentQuestionIndex++;
                 this.generateQuestion();
             }
