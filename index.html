@@ -474,7 +474,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🈲 倉頡練習遊戲</h1>
+            <h1>🈲 倉頡練習遊戲 🈲</h1>
             <p>從部首入門，逐步精通倉頡輸入法</p>
         </div>
 
@@ -533,10 +533,13 @@
                     <input type="text" class="cangjie-input" id="cangjie-input" 
                            placeholder="輸入中文字" 
                            maxlength="5"
-                           lang="zh-TW"
-                           inputmode="text">
-                    <div style="font-size: 0.9rem; color: #666; margin: 10px 0;">
-                        💡 直接輸入中文字 (如: 明, 休, 好)
+                           lang="en"
+                           inputmode="text"
+                           autocomplete="off"
+                           spellcheck="false"
+                           style="ime-mode: disabled; -webkit-ime-mode: disabled;">
+                    <div style="font-size: 1.2rem; color: #666; margin: 10px 0;">
+                        💡 請確認鍵盤為中文輸入法, 輸入中文字後可按2次Enter提交
                     </div>
                     <br>
                     <button class="submit-btn" id="submit-btn">提交答案</button>
