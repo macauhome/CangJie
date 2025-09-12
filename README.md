@@ -1,4 +1,4 @@
-# CangJie pratice game
+# CangJie practice game
 # 倉頡練習
 Introduction
 The Cangjie Practice application is a gamified learning tool designed to help users master the Cangjie input method—a popular Chinese character input system based on character decomposition into radicals. The application provides an interactive, progressive learning experience through five difficulty levels, supporting dual input modes (English letters and Chinese radicals), streak-based scoring, and persistent progress tracking via cookies. It is built as a single-file HTML application with embedded JavaScript and CSS, using vanilla JS without external dependencies.
