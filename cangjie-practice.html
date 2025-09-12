@@ -147,10 +147,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .question-hint {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
+
 
         .input-area {
             margin-bottom: 30px;
@@ -230,32 +227,6 @@
             transition: width 0.3s ease;
         }
 
-        .cangjie-keyboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .key-button {
-            padding: 15px 10px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .key-button:hover {
-            background: #f0f0f0;
-            border-color: #4834d4;
-        }
-
         .test-mode {
             position: fixed;
             top: 20px;
@@ -329,6 +300,40 @@
             display: none;
         }
 
+        .cangjie-keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .key-button {
+            padding: 15px 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .key-button:hover {
+            background: #f0f0f0;
+            border-color: #4834d4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .key-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -362,20 +367,40 @@
                 grid-template-columns: 1fr 1fr;
                 gap: 15px;
             }
+            
+            .cangjie-keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 8px;
+            }
+            
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
+            }
+            
+            .cangjie-keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 8px;
+            }
+            
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
+            }
+            
+            .cangjie-keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+                gap: 8px;
+            }
+            
+            .key-button {
+                padding: 12px 8px;
+                font-size: 1rem;
+            }
 
             .level-selector {
                 grid-template-columns: 1fr;
                 gap: 10px;
-            }
-
-            .cangjie-keyboard {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 8px;
-            }
-
-            .key-button {
-                padding: 12px 8px;
-                font-size: 1rem;
             }
         }
 
@@ -502,35 +527,33 @@
             <div class="game-area">
                 <div class="question-card">
                     <div class="question-text" id="question-char">一</div>
-                    <div class="question-hint" id="question-hint">請輸入此字的倉頡碼</div>
                 </div>
 
                 <div class="input-area">
                     <input type="text" class="cangjie-input" id="cangjie-input" 
-                           placeholder="輸入中文字或倉頡部首" 
-                           maxlength="15"
+                           placeholder="輸入中文字" 
+                           maxlength="5"
                            lang="zh-TW"
                            inputmode="text">
                     <div style="font-size: 0.9rem; color: #666; margin: 10px 0;">
-                        💡 可輸入中文字 (如: 明) 或倉頡部首 (如: 日月)<br>
-                        ⌨️ 按<strong>空白鍵</strong>可將倉頡碼轉換為對應的中文字
+                        💡 直接輸入中文字 (如: 明, 休, 好)
                     </div>
                     <br>
                     <button class="submit-btn" id="submit-btn">提交答案</button>
                     <button class="submit-btn skip-btn" id="skip-btn">跳過</button>
-                    <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">隨機順序</button>
+                    <button class="submit-btn" id="shuffle-btn" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">重新生成</button>
                 </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+
+                <div class="feedback hidden" id="feedback"></div>
 
                 <!-- Cangjie Keyboard -->
                 <div class="cangjie-keyboard" id="cangjie-keyboard">
                     <!-- Will be populated by JavaScript -->
                 </div>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                </div>
-
-                <div class="feedback hidden" id="feedback"></div>
             </div>
         </div>
     </div>
@@ -586,104 +609,104 @@
                         name: "基礎部首",
                         description: "學習常用部首的倉頡碼",
                         questions: [
-                            {char: "一", code: "M", hint: "橫 (M)"},
-                            {char: "丨", code: "L", hint: "豎 (L)"},
-                            {char: "丿", code: "N", hint: "撇 (N)"},
-                            {char: "丶", code: "Y", hint: "點 (Y)"},
-                            {char: "口", code: "R", hint: "口 (R)"},
-                            {char: "日", code: "A", hint: "日 (A)"},
-                            {char: "月", code: "B", hint: "月 (B)"},
-                            {char: "木", code: "D", hint: "木 (D)"},
-                            {char: "水", code: "E", hint: "水 (E)"},
-                            {char: "火", code: "F", hint: "火 (F)"},
-                            {char: "土", code: "G", hint: "土 (G)"},
-                            {char: "竹", code: "H", hint: "竹 (H)"},
-                            {char: "戈", code: "I", hint: "戈 (I)"},
-                            {char: "金", code: "C", hint: "金 (C)"},
-                            {char: "人", code: "O", hint: "人 (O)"},
-                            {char: "大", code: "K", hint: "大 (K)"},
-                            {char: "心", code: "P", hint: "心 (P)"},
-                            {char: "手", code: "Q", hint: "手 (Q)"},
-                            {char: "山", code: "U", hint: "山 (U)"},
-                            {char: "女", code: "V", hint: "女 (V)"}
+                            {char: "一", code: "M"},
+                            {char: "丨", code: "L"},
+                            {char: "丿", code: "N"},
+                            {char: "丶", code: "Y"},
+                            {char: "口", code: "R"},
+                            {char: "日", code: "A"},
+                            {char: "月", code: "B"},
+                            {char: "木", code: "D"},
+                            {char: "水", code: "E"},
+                            {char: "火", code: "F"},
+                            {char: "土", code: "G"},
+                            {char: "竹", code: "H"},
+                            {char: "戈", code: "I"},
+                            {char: "金", code: "C"},
+                            {char: "人", code: "O"},
+                            {char: "大", code: "K"},
+                            {char: "心", code: "P"},
+                            {char: "手", code: "Q"},
+                            {char: "山", code: "U"},
+                            {char: "女", code: "V"}
                         ]
                     },
                     2: { // Level 2: Two-radical combinations
                         name: "雙部首組合",
                         description: "兩個部首組合的簡單漢字",
                         questions: [
-                            {char: "二", code: "MM", hint: "橫橫 (MM)"},
-                            {char: "三", code: "MMM", hint: "橫橫橫 (MMM)"},
-                            {char: "十", code: "JX", hint: "十難 (JX)"},
-                            {char: "丁", code: "MN", hint: "橫撇 (MN)"},
-                            {char: "七", code: "JU", hint: "十山 (JU)"},
-                            {char: "九", code: "KN", hint: "大撇 (KN)"},
-                            {char: "八", code: "HO", hint: "竹人 (HO)"},
-                            {char: "入", code: "OY", hint: "人點 (OY)"},
-                            {char: "上", code: "YM", hint: "點橫 (YM)"},
-                            {char: "下", code: "MY", hint: "橫點 (MY)"},
-                            {char: "了", code: "VN", hint: "女撇 (VN)"},
-                            {char: "小", code: "NC", hint: "撇金 (NC)"},
-                            {char: "工", code: "MLM", hint: "橫中橫 (MLM)"},
-                            {char: "士", code: "JM", hint: "十橫 (JM)"},
-                            {char: "王", code: "MG", hint: "橫土 (MG)"},
-                            {char: "力", code: "KS", hint: "大尸 (KS)"},
-                            {char: "又", code: "CK", hint: "金大 (CK)"},
-                            {char: "刀", code: "SH", hint: "尸竹 (SH)"},
-                            {char: "子", code: "ND", hint: "撇木 (ND)"},
-                            {char: "中", code: "L", hint: "中 (L)"}
+                            {char: "二", code: "MM"},
+                            {char: "三", code: "MMM"},
+                            {char: "十", code: "JX"},
+                            {char: "丁", code: "MN"},
+                            {char: "七", code: "JU"},
+                            {char: "九", code: "KN"},
+                            {char: "八", code: "HO"},
+                            {char: "入", code: "OY"},
+                            {char: "上", code: "YM"},
+                            {char: "下", code: "MY"},
+                            {char: "了", code: "VN"},
+                            {char: "小", code: "NC"},
+                            {char: "工", code: "MLM"},
+                            {char: "士", code: "JM"},
+                            {char: "王", code: "MG"},
+                            {char: "力", code: "KS"},
+                            {char: "又", code: "CK"},
+                            {char: "刀", code: "SH"},
+                            {char: "子", code: "ND"},
+                            {char: "中", code: "L"}
                         ]
                     },
                     3: { // Level 3: Three-radical combinations
                         name: "三部首組合",
                         description: "三個部首組合的常用字",
                         questions: [
-                            {char: "明", code: "AB", hint: "日月 (AB)"},
-                            {char: "林", code: "DD", hint: "木木 (DD)"},
-                            {char: "好", code: "VND", hint: "女撇木 (VND)"},
-                            {char: "休", code: "OD", hint: "人木 (OD)"},
-                            {char: "不", code: "MF", hint: "橫火 (MF)"},
-                            {char: "門", code: "AN", hint: "日撇 (AN)"},
-                            {char: "左", code: "KD", hint: "大木 (KD)"},
-                            {char: "右", code: "KR", hint: "大口 (KR)"},
-                            {char: "和", code: "HD", hint: "竹木 (HD)"},
-                            {char: "可", code: "RK", hint: "口大 (RK)"},
-                            {char: "去", code: "GMU", hint: "土橫山 (GMU)"},
-                            {char: "只", code: "RQ", hint: "口手 (RQ)"},
-                            {char: "再", code: "MML", hint: "橫橫中 (MML)"},
-                            {char: "也", code: "PD", hint: "心木 (PD)"},
-                            {char: "都", code: "NL", hint: "撇中 (NL)"},
-                            {char: "在", code: "GMI", hint: "土橫戈 (GMI)"},
-                            {char: "有", code: "EQM", hint: "水手橫 (EQM)"},
-                            {char: "多", code: "NY", hint: "撇點 (NY)"},
-                            {char: "少", code: "NC", hint: "撇金 (NC)"},
-                            {char: "才", code: "FQ", hint: "火手 (FQ)"}
+                            {char: "明", code: "AB"},
+                            {char: "林", code: "DD"},
+                            {char: "好", code: "VND"},
+                            {char: "休", code: "OD"},
+                            {char: "不", code: "MF"},
+                            {char: "門", code: "AN"},
+                            {char: "左", code: "KD"},
+                            {char: "右", code: "KR"},
+                            {char: "和", code: "HD"},
+                            {char: "可", code: "RK"},
+                            {char: "去", code: "GMU"},
+                            {char: "只", code: "RQ"},
+                            {char: "再", code: "MML"},
+                            {char: "也", code: "PD"},
+                            {char: "都", code: "NL"},
+                            {char: "在", code: "GMI"},
+                            {char: "有", code: "EQM"},
+                            {char: "多", code: "NY"},
+                            {char: "少", code: "NC"},
+                            {char: "才", code: "FQ"}
                         ]
                     },
                     4: { // Level 4: Complex four+ radical combinations
                         name: "複雜組合",
                         description: "四個以上部首組合的複雜漢字",
                         questions: [
-                            {char: "信", code: "OKMR", hint: "人大橫口 (OKMR)"},
-                            {char: "他", code: "OJBD", hint: "人十月木 (OJBD)"},
-                            {char: "你", code: "OJKL", hint: "人十大中 (OJKL)"},
-                            {char: "我", code: "HQNI", hint: "竹手撇戈 (HQNI)"},
-                            {char: "的", code: "WLJR", hint: "田中十口 (WLJR)"},
-                            {char: "是", code: "AMYO", hint: "日橫女人 (AMYO)"},
-                            {char: "來", code: "DOI", hint: "木人戈 (DOI)"},
-                            {char: "到", code: "SHLN", hint: "尸竹中撇 (SHLN)"},
-                            {char: "雨", code: "MWBY", hint: "橫田月點 (MWBY)"},
-                            {char: "學", code: "BBGF", hint: "月月土火 (BBGF)"},
-                            {char: "時", code: "AFBR", hint: "日火月口 (AFBR)"},
-                            {char: "會", code: "OMWA", hint: "人橫田日 (OMWA)"},
-                            {char: "只", code: "RQ", hint: "口手 (RQ)"},
-                            {char: "那", code: "NANI", hint: "撇日撇戈 (NANI)"},
-                            {char: "這", code: "YMCW", hint: "點橫金田 (YMCW)"},
-                            {char: "可", code: "RK", hint: "口大 (RK)"},
-                            {char: "能", code: "BHNF", hint: "月竹撇火 (BHNF)"},
-                            {char: "說", code: "YRYTU", hint: "點口點戶山 (YRYTU)"},
-                            {char: "看", code: "HQBU", hint: "竹手月山 (HQBU)"},
-                            {char: "知", code: "YMDI", hint: "點橫木戈 (YMDI)"}
+                            {char: "信", code: "OKMR"},
+                            {char: "他", code: "OJBD"},
+                            {char: "你", code: "OJKL"},
+                            {char: "我", code: "HQNI"},
+                            {char: "的", code: "WLJR"},
+                            {char: "是", code: "AMYO"},
+                            {char: "來", code: "DOI"},
+                            {char: "到", code: "SHLN"},
+                            {char: "雨", code: "MWBY"},
+                            {char: "學", code: "BBGF"},
+                            {char: "時", code: "AFBR"},
+                            {char: "會", code: "OMWA"},
+                            {char: "那", code: "NANI"},
+                            {char: "這", code: "YMCW"},
+                            {char: "能", code: "BHNF"},
+                            {char: "說", code: "YRYTU"},
+                            {char: "看", code: "HQBU"},
+                            {char: "知", code: "YMDI"},
+                            {char: "情", code: "PTQL"},
+                            {char: "想", code: "DQUP"}
                         ]
                     },
                     5: { // Level 5: Master challenge
@@ -693,21 +716,7 @@
                     }
                 };
 
-                // Populate level 5 with mixed questions from all levels
-                for (let level = 1; level <= 4; level++) {
-                    this.gameData[5].questions = this.gameData[5].questions.concat(
-                        this.gameData[level].questions.slice()
-                    );
-                }
-                // Shuffle level 5 questions
-                this.shuffleArray(this.gameData[5].questions);
-
-                // Shuffle all level questions initially for randomization
-                for (let level = 1; level <= 5; level++) {
-                    this.shuffleArray(this.gameData[level].questions);
-                }
-
-                // Cangjie key mappings
+                // Initialize Cangjie key mappings BEFORE generating questions
                 this.cangjieKeys = [
                     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
                     'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
@@ -716,7 +725,7 @@
 
                 this.keyDescriptions = {
                     'A': '日', 'B': '月', 'C': '金', 'D': '木', 'E': '水',
-                    'F': '火', 'G': '土', 'H': '竹', 'I': '戈', 'J': '鉤',
+                    'F': '火', 'G': '土', 'H': '竹', 'I': '戈', 'J': '十',
                     'K': '大', 'L': '中', 'M': '一', 'N': '弓', 'O': '人',
                     'P': '心', 'Q': '手', 'R': '口', 'S': '尸', 'T': '廿',
                     'U': '山', 'V': '女', 'W': '田', 'X': '難', 'Y': '卜', 'Z': '重'
@@ -761,15 +770,12 @@
                 this.chineseToEnglish['卜'] = 'Y';
                 this.chineseToEnglish['重'] = 'Z';
 
-                // Create mapping from Cangjie codes to Chinese characters
+                // Initialize code-to-character mapping
                 this.codeToCharacter = {};
-                
-                // Populate the mapping from all game data
-                for (let level = 1; level <= 4; level++) {
-                    this.gameData[level].questions.forEach(question => {
-                        this.codeToCharacter[question.code] = question.char;
-                    });
-                }
+
+                // Generate initial questions for the starting level only (to save performance)
+                // Other levels will be generated when selected
+                this.generateQuestionsForLevel(this.currentLevel);
             }
 
             setupEventListeners() {
@@ -796,84 +802,84 @@
                 skipBtn.addEventListener('click', () => this.skipQuestion());
                 shuffleBtn.addEventListener('click', () => this.shuffleCurrentLevel());
 
+                // Simple input handling - no complex conversion
                 input.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         this.submitAnswer();
-                    } else if (e.key === ' ') {
-                        e.preventDefault(); // Prevent space from being added to input
-                        this.convertToCharacter();
                     }
                 });
-
-                // Handle Chinese input method and display Chinese characters only
+                
+                // Convert English letters to Chinese radicals as user types
                 input.addEventListener('input', (e) => {
-                    const value = e.target.value;
-                    let displayValue = '';
+                    let value = e.target.value;
+                    let converted = '';
                     
                     for (let char of value) {
-                        if (this.chineseToEnglish[char]) {
-                            // Keep Chinese characters as is for display
-                            displayValue += char;
-                        } else if (/[a-zA-Z]/.test(char)) {
-                            // Convert English letters to Chinese radicals for display
+                        if (/[A-Z]/i.test(char)) {
+                            // Convert English letter to Chinese radical
                             const upperChar = char.toUpperCase();
                             if (this.keyDescriptions[upperChar]) {
-                                displayValue += this.keyDescriptions[upperChar];
+                                converted += this.keyDescriptions[upperChar];
                             }
+                        } else {
+                            // Keep Chinese characters and other valid characters
+                            converted += char;
                         }
-                        // Skip other characters but preserve existing Chinese characters
                     }
                     
-                    // Only update if the input is not in composition (IME not active)
-                    if (!e.target.isComposing && displayValue !== value && displayValue.length > 0) {
-                        e.target.value = displayValue;
+                    // Update input value if conversion occurred
+                    if (converted !== value) {
+                        e.target.value = converted;
                     }
                 });
                 
-                // Handle composition events for Chinese input method
-                input.addEventListener('compositionstart', (e) => {
-                    e.target.isComposing = true;
+                // Convert English letters to Chinese radicals as user types
+                input.addEventListener('input', (e) => {
+                    let value = e.target.value;
+                    let converted = '';
+                    
+                    for (let char of value) {
+                        if (/[A-Z]/i.test(char)) {
+                            // Convert English letter to Chinese radical
+                            const upperChar = char.toUpperCase();
+                            if (this.keyDescriptions[upperChar]) {
+                                converted += this.keyDescriptions[upperChar];
+                            }
+                        } else {
+                            // Keep Chinese characters and other valid characters
+                            converted += char;
+                        }
+                    }
+                    
+                    // Update input value if conversion occurred
+                    if (converted !== value) {
+                        e.target.value = converted;
+                    }
                 });
                 
-                input.addEventListener('compositionend', (e) => {
-                    e.target.isComposing = false;
-                    // Trigger input event to convert to Chinese display
-                    e.target.dispatchEvent(new Event('input'));
+                // Convert English letters to Chinese radicals as user types
+                input.addEventListener('input', (e) => {
+                    let value = e.target.value;
+                    let converted = '';
+                    
+                    for (let char of value) {
+                        if (/[A-Z]/i.test(char)) {
+                            // Convert English letter to Chinese radical
+                            const upperChar = char.toUpperCase();
+                            if (this.keyDescriptions[upperChar]) {
+                                converted += this.keyDescriptions[upperChar];
+                            }
+                        } else {
+                            // Keep Chinese characters and other valid characters
+                            converted += char;
+                        }
+                    }
+                    
+                    // Update input value if conversion occurred
+                    if (converted !== value) {
+                        e.target.value = converted;
+                    }
                 });
-            }
-
-            convertToCharacter() {
-                const input = document.getElementById('cangjie-input');
-                const currentInput = input.value;
-                
-                // Convert displayed Chinese radicals to English codes for lookup
-                const codes = this.convertInputToEnglishCodes(currentInput);
-                
-                // Look up the character for these codes
-                if (this.codeToCharacter[codes]) {
-                    // Replace the input with the actual Chinese character
-                    input.value = this.codeToCharacter[codes];
-                    
-                    // Show feedback about the conversion
-                    const feedback = document.getElementById('feedback');
-                    feedback.textContent = `${currentInput} → ${codes} → ${this.codeToCharacter[codes]}`;
-                    feedback.className = 'feedback correct';
-                    feedback.classList.remove('hidden');
-                    
-                    setTimeout(() => {
-                        feedback.classList.add('hidden');
-                    }, 2000);
-                } else {
-                    // Show message if no character found
-                    const feedback = document.getElementById('feedback');
-                    feedback.textContent = `找不到對應的漢字：${currentInput} (${codes})`;
-                    feedback.className = 'feedback incorrect';
-                    feedback.classList.remove('hidden');
-                    
-                    setTimeout(() => {
-                        feedback.classList.add('hidden');
-                    }, 2000);
-                }
             }
 
             setupTestMode() {
@@ -929,7 +935,7 @@
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 1500);
+                }, 800);
             }
 
             updateTestModeButtons() {
@@ -982,30 +988,229 @@
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 2000);
+                }, 500);
             }
 
             createCangjieKeyboard() {
                 const keyboard = document.getElementById('cangjie-keyboard');
-                keyboard.innerHTML = '';
-
-                // Create Chinese radical buttons for display
+                keyboard.innerHTML = ''; // Clear existing content
+                
                 this.cangjieKeys.forEach(key => {
                     const button = document.createElement('button');
                     button.className = 'key-button';
+                    
+                    // Get Chinese radical for this key
                     const chineseRadical = this.keyDescriptions[key];
-                    button.innerHTML = `<div style="font-size: 1.3rem;">${chineseRadical}</div><small>${key}</small>`;
+                    
+                    // Display Chinese radical prominently with English letter as reference
+                    button.innerHTML = `
+                        <div style="font-size: 1.3rem; color: #333;">${chineseRadical}</div>
+                        <small style="color: #666; font-size: 0.8rem;">${key}</small>
+                    `;
+                    
+                    // Add click handler
                     button.addEventListener('click', () => {
                         const input = document.getElementById('cangjie-input');
-                        if (input.value.length < 15) {
-                            input.value += chineseRadical;
-                            // Trigger input event to handle any conversions
-                            input.dispatchEvent(new Event('input'));
+                        const currentValue = input.value;
+                        
+                        // Check input limit (5 characters)
+                        if (currentValue.length < 5) {
+                            // Add Chinese radical to input
+                            input.value = currentValue + chineseRadical;
+                            
+                            // Maintain focus on input field
+                            input.focus();
                         }
                     });
+                    
                     keyboard.appendChild(button);
                 });
+                
+                // Add clear button
+                const clearButton = document.createElement('button');
+                clearButton.className = 'key-button';
+                clearButton.innerHTML = `
+                    <div style="font-size: 1.1rem; color: #e74c3c;">清除</div>
+                    <small style="color: #999; font-size: 0.8rem;">Clear</small>
+                `;
+                clearButton.style.gridColumn = 'span 2';
+                clearButton.addEventListener('click', () => {
+                    const input = document.getElementById('cangjie-input');
+                    input.value = '';
+                    input.focus();
+                });
+                keyboard.appendChild(clearButton);
             }
+
+            generateQuestionsForLevel(level) {
+                // Generate fresh questions at runtime every time
+                const questionCount = level === 5 ? 25 : (level === 4 ? 18 : 12); // More questions for Level 4 challenge
+                this.gameData[level].questions = [];
+                
+                if (level === 1) {
+                    // Level 1: Randomly select basic radicals each time
+                    const allBasicRadicals = this.getAllBasicRadicals();
+                    this.gameData[level].questions = this.getRandomItems(allBasicRadicals, questionCount);
+                } else if (level === 2) {
+                    // Level 2: Generate random two-radical combinations
+                    this.gameData[level].questions = this.generateRandomTwoRadicalCombinations(questionCount);
+                } else if (level === 3) {
+                    // Level 3: Generate random three-radical combinations
+                    this.gameData[level].questions = this.generateRandomThreeRadicalCombinations(questionCount);
+                } else if (level === 4) {
+                    // Level 4: Generate random complex combinations
+                    this.gameData[level].questions = this.generateRandomComplexCombinations(questionCount);
+                } else if (level === 5) {
+                    // Level 5: Mix random selections from all levels
+                    const mixedQuestions = [];
+                    mixedQuestions.push(...this.getRandomItems(this.getAllBasicRadicals(), 5));
+                    mixedQuestions.push(...this.generateRandomTwoRadicalCombinations(6));
+                    mixedQuestions.push(...this.generateRandomThreeRadicalCombinations(6));
+                    mixedQuestions.push(...this.generateRandomComplexCombinations(8));
+                    this.gameData[level].questions = mixedQuestions;
+                }
+                
+                // Update code-to-character mapping
+                this.updateCodeToCharacterMapping();
+                
+                // Shuffle the generated questions for random order
+                this.shuffleArray(this.gameData[level].questions);
+                
+                console.log(`Generated ${this.gameData[level].questions.length} random questions for Level ${level}`);
+            }
+
+            getAllBasicRadicals() {
+                // Expanded pool of basic radicals and simple characters
+                return [
+                    {char: '一', code: 'M'}, {char: '丨', code: 'L'}, {char: '丿', code: 'N'}, {char: '丶', code: 'Y'},
+                    {char: '口', code: 'R'}, {char: '日', code: 'A'}, {char: '月', code: 'B'}, {char: '木', code: 'D'},
+                    {char: '水', code: 'E'}, {char: '火', code: 'F'}, {char: '土', code: 'G'}, {char: '竹', code: 'H'},
+                    {char: '戈', code: 'I'}, {char: '十', code: 'J'}, {char: '大', code: 'K'}, {char: '中', code: 'L'},
+                    {char: '弓', code: 'N'}, {char: '人', code: 'O'}, {char: '心', code: 'P'}, {char: '手', code: 'Q'},
+                    {char: '尸', code: 'S'}, {char: '廿', code: 'T'}, {char: '山', code: 'U'}, {char: '女', code: 'V'},
+                    {char: '田', code: 'W'}, {char: '卜', code: 'Y'}, {char: '金', code: 'C'}
+                ];
+            }
+
+            generateRandomTwoRadicalCombinations(count) {
+                // Large pool of two-radical combinations for random selection
+                const twoRadicalPool = [
+                    {char: '二', code: 'MM'}, {char: '三', code: 'MMM'}, {char: '十', code: 'JX'},
+                    {char: '明', code: 'AB'}, {char: '林', code: 'DD'}, {char: '休', code: 'OD'},
+                    {char: '上', code: 'YM'}, {char: '下', code: 'MY'}, {char: '小', code: 'NC'},
+                    {char: '工', code: 'MLM'}, {char: '王', code: 'MG'}, {char: '子', code: 'ND'},
+                    {char: '夫', code: 'OK'}, {char: '丁', code: 'MN'}, {char: '八', code: 'HO'},
+                    {char: '七', code: 'JU'}, {char: '力', code: 'KS'}, {char: '又', code: 'CK'},
+                    {char: '刀', code: 'SH'}, {char: '了', code: 'VN'}, {char: '才', code: 'FQ'},
+                    {char: '天', code: 'MK'}, {char: '九', code: 'KN'}, {char: '入', code: 'OY'},
+                    {char: '乃', code: 'NVL'}, {char: '么', code: 'YVY'}, {char: '久', code: 'NON'},
+                    {char: '已', code: 'VY'}, {char: '己', code: 'SU'}, {char: '巳', code: 'RU'},
+                    {char: '士', code: 'JM'}, {char: '土', code: 'G'}, {char: '干', code: 'JM'},
+                    {char: '千', code: 'OP'}, {char: '万', code: 'OY'}, {char: '与', code: 'GKN'},
+                    {char: '丌', code: 'MJJ'}, {char: '不', code: 'MF'}, {char: '中', code: 'L'},
+                    {char: '丰', code: 'MJJ'}, {char: '丹', code: 'MY'}
+                ];
+                return this.getRandomItems(twoRadicalPool, count);
+            }
+
+            generateRandomThreeRadicalCombinations(count) {
+                // Expanded pool of three-radical combinations for random selection
+                const threeRadicalPool = [
+                    {char: '好', code: 'VND'}, {char: '門', code: 'AN'}, {char: '和', code: 'HD'},
+                    {char: '可', code: 'RK'}, {char: '只', code: 'RQ'}, {char: '在', code: 'GMI'},
+                    {char: '有', code: 'EQM'}, {char: '左', code: 'KD'}, {char: '右', code: 'KR'},
+                    {char: '去', code: 'GMU'}, {char: '再', code: 'MML'}, {char: '也', code: 'PD'},
+                    {char: '多', code: 'NY'}, {char: '少', code: 'NC'}, {char: '世', code: 'JJJ'},
+                    {char: '地', code: 'GPD'}, {char: '年', code: 'OQ'}, {char: '以', code: 'VYL'},
+                    {char: '後', code: 'HOIT'}, {char: '前', code: 'UOI'}, {char: '今', code: 'OIN'},
+                    {char: '因', code: 'WK'}, {char: '回', code: 'WR'}, {char: '每', code: 'EOI'},
+                    {char: '她', code: 'VHE'}, {char: '他', code: 'OJBD'}, {char: '我', code: 'HQNI'},
+                    {char: '你', code: 'OJKL'}, {char: '們', code: 'ANS'}, {char: '自', code: 'HXBU'},
+                    {char: '從', code: 'OOO'}, {char: '把', code: 'QJR'}, {char: '個', code: 'OJLO'},
+                    {char: '很', code: 'HVVL'}, {char: '就', code: 'YLWP'}, {char: '都', code: 'NL'},
+                    {char: '被', code: 'MWLMI'}, {char: '給', code: 'VIF'}, {char: '讓', code: 'YTJRR'},
+                    {char: '想', code: 'DXNO'}, {char: '要', code: 'MWV'}, {char: '做', code: 'OJLR'},
+                    {char: '來', code: 'DOI'}, {char: '走', code: 'GQRU'}, {char: '看', code: 'HQBU'},
+                    {char: '聽', code: 'SJRB'}, {char: '說', code: 'YRYTU'}, {char: '問', code: 'ANR'},
+                    {char: '打', code: 'QJR'}, {char: '找', code: 'QJD'}, {char: '拿', code: 'QJE'}
+                ];
+                return this.getRandomItems(threeRadicalPool, count);
+            }
+
+            generateRandomComplexCombinations(count) {
+                // Significantly expanded pool of very complex 4+ radical combinations for challenging practice
+                const complexPool = [
+                    // 4-code complex characters
+                    {char: '信', code: 'OKMR'}, {char: '他', code: 'OJBD'}, {char: '我', code: 'HQNI'},
+                    {char: '的', code: 'WLJR'}, {char: '是', code: 'AMYO'}, {char: '來', code: 'DOI'},
+                    {char: '雨', code: 'MWBY'}, {char: '學', code: 'BBGF'}, {char: '時', code: 'AFBR'},
+                    {char: '會', code: 'OMWA'}, {char: '能', code: 'BHNF'}, {char: '看', code: 'HQBU'},
+                    {char: '知', code: 'YMDI'}, {char: '開', code: 'JJKA'}, {char: '關', code: 'ANMG'},
+                    {char: '那', code: 'NANI'}, {char: '這', code: 'YMCW'}, {char: '習', code: 'SMFF'},
+                    {char: '表', code: 'MWLV'}, {char: '電', code: 'JRWC'}, {char: '話', code: 'YRNR'},
+                    {char: '書', code: 'AMII'}, {char: '字', code: 'JCND'}, {char: '寫', code: 'UMCJ'},
+                    {char: '聲', code: 'GASR'}, {char: '意', code: 'YISP'}, {char: '事', code: 'JLB'},
+                    {char: '情', code: 'PTQL'}, {char: '理', code: 'MGJM'}, {char: '當', code: 'JREC'},
+                    {char: '然', code: 'YOAF'}, {char: '結', code: 'VFGK'}, {char: '案', code: 'MTAJ'},
+                    {char: '法', code: 'EIJR'}, {char: '式', code: 'IROK'}, {char: '感', code: 'TOPJ'},
+                    {char: '成', code: 'DHNV'}, {char: '發', code: 'NLWK'}, {char: '活', code: 'EONH'},
+                    
+                    // 5-code very complex characters
+                    {char: '道', code: 'YTCSH'}, {char: '說', code: 'YRYTU'}, {char: '讀', code: 'YRGHU'},
+                    {char: '記', code: 'YROK'}, {char: '果', code: 'WDMVM'}, {char: '原', code: 'MWMBO'},
+                    {char: '題', code: 'MBNB'}, {char: '答', code: 'HTCO'}, {char: '方', code: 'YSHML'},
+                    {char: '種', code: 'HDTJR'}, {char: '類', code: 'HXOOO'}, {char: '樣', code: 'DYFS'},
+                    {char: '覺', code: 'YBUK'}, {char: '化', code: 'OFNHE'}, {char: '變', code: 'YOYOY'},
+                    
+                    // Ultra-complex 6+ code characters for extreme challenge
+                    {char: '還', code: 'YYLMO'}, {char: '職', code: 'SJRSG'}, {char: '身', code: 'HJBDY'},
+                    {char: '基', code: 'GJMMI'}, {char: '自', code: 'HXBU'}, {char: '紀', code: 'VFMHD'},
+                    {char: '教', code: 'YXOKT'}, {char: '主', code: 'YGDI'}, {char: '社', code: 'MFQMB'},
+                    {char: '政', code: 'YTOK'}, {char: '治', code: 'EITQ'}, {char: '經', code: 'VFQMC'},
+                    {char: '論', code: 'YROII'}, {char: '除', code: 'NLWLX'}, {char: '集', code: 'OOGJ'},
+                    {char: '企', code: 'OHBT'}, {char: '業', code: 'DJTWM'}, {char: '產', code: 'YSHQM'},
+                    {char: '品', code: 'KRKR'}, {char: '機', code: 'DXHHH'}, {char: '構', code: 'DIIB'},
+                    {char: '組', code: 'VFMHM'}, {char: '導', code: 'YSHVI'}, {char: '術', code: 'YMTWL'},
+                    {char: '節', code: 'HIJRR'}, {char: '研', code: 'MRMHH'}, {char: '究', code: 'JTCTJ'},
+                    
+                    // Complex technical and academic terms
+                    {char: '藝', code: 'TWNI'}, {char: '技', code: 'QRQK'}, {char: '運', code: 'YIIY'},
+                    {char: '動', code: 'KHBT'}, {char: '建', code: 'NUOG'}, {char: '設', code: 'YRGHU'},
+                    {char: '管', code: 'HRHU'}, {char: '圖', code: 'WLSJ'}, {char: '館', code: 'ANVW'},
+                    {char: '市', code: 'YLMB'}, {char: '場', code: 'GCOW'}, {char: '購', code: 'MBRUC'},
+                    {char: '買', code: 'MWLMI'}, {char: '賣', code: 'MWLB'}, {char: '價', code: 'OJKM'},
+                    
+                    // Very complex traditional characters
+                    {char: '繼', code: 'VFGKF'}, {char: '續', code: 'VFGK'}, {char: '躍', code: 'RMYBS'},
+                    {char: '議', code: 'YROGR'}, {char: '處', code: 'YKNLB'}, {char: '與', code: 'YHNNG'},
+                    {char: '戰', code: 'IELM'}, {char: '爭', code: 'LMBC'}, {char: '難', code: 'XOWJ'},
+                    {char: '問', code: 'RJRU'}, {char: '響', code: 'SJRYR'}, {char: '應', code: 'YGDI'},
+                    {char: '護', code: 'YKRHR'}, {char: '離', code: 'OGYWJ'}, {char: '關', code: 'ANMG'},
+                    {char: '環', code: 'MWLVI'}, {char: '境', code: 'GQJRR'}, {char: '態', code: 'DJHAP'},
+                    {char: '網', code: 'WLWL'}, {char: '際', code: 'NLHXC'}, {char: '線', code: 'VFHXC'},
+                    {char: '資', code: 'MWLMI'}, {char: '訊', code: 'YRHXC'}, {char: '據', code: 'QJRHR'}
+                ];
+                return this.getRandomItems(complexPool, count);
+            }
+
+            updateCodeToCharacterMapping() {
+                this.codeToCharacter = {};
+                for (let level = 1; level <= 5; level++) {
+                    if (this.gameData[level] && this.gameData[level].questions) {
+                        this.gameData[level].questions.forEach(question => {
+                            this.codeToCharacter[question.code] = question.char;
+                        });
+                    }
+                }
+            }
+
+            getRandomItems(array, count) {
+                const shuffled = [...array];
+                this.shuffleArray(shuffled);
+                return shuffled.slice(0, Math.min(count, shuffled.length));
+            }
+
+
 
             selectLevel(level) {
                 if (level > this.getUnlockedLevel()) return;
@@ -1013,8 +1218,9 @@
                 this.currentLevel = level;
                 this.currentQuestionIndex = 0;
 
-                // Randomize questions for the selected level
-                this.shuffleArray(this.gameData[level].questions);
+                // Always generate fresh questions at runtime every time level is selected
+                console.log(`Generating fresh random questions for Level ${level}...`);
+                this.generateQuestionsForLevel(level);
 
                 // Update level buttons
                 document.querySelectorAll('.level-button').forEach(button => {
@@ -1028,6 +1234,16 @@
                 this.generateQuestion();
                 this.updateDisplay();
                 this.saveProgress();
+                
+                // Show feedback about new random questions
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = `🎲 Level ${level}: 已生成全新隨機題目！`;
+                feedback.className = 'feedback correct';
+                feedback.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    feedback.classList.add('hidden');
+                }, 800);
             }
 
             generateQuestion() {
@@ -1037,7 +1253,6 @@
                 const question = levelData.questions[this.currentQuestionIndex % levelData.questions.length];
                 
                 document.getElementById('question-char').textContent = question.char;
-                document.getElementById('question-hint').textContent = question.hint;
                 document.getElementById('cangjie-input').value = '';
                 document.getElementById('cangjie-input').focus();
 
@@ -1088,7 +1303,7 @@
                 // Move to next question after delay
                 setTimeout(() => {
                     this.nextQuestion();
-                }, 2000);
+                }, 800);
             }
 
             handleCorrectAnswer() {
@@ -1150,7 +1365,7 @@
 
                 setTimeout(() => {
                     this.nextQuestion();
-                }, 2000);
+                }, 800);
             }
 
             nextQuestion() {
@@ -1267,20 +1482,21 @@
             }
 
             shuffleCurrentLevel() {
-                // Shuffle questions in current level
-                this.shuffleArray(this.gameData[this.currentLevel].questions);
+                // Generate completely new random questions instead of just shuffling
+                console.log(`Regenerating random questions for Level ${this.currentLevel}...`);
+                this.generateQuestionsForLevel(this.currentLevel);
                 this.currentQuestionIndex = 0;
                 this.generateQuestion();
                 
                 // Show feedback
                 const feedback = document.getElementById('feedback');
-                feedback.textContent = '已重新打亂題目順序！';
+                feedback.textContent = '🎲 已重新生成隨機題目！';
                 feedback.className = 'feedback correct';
                 feedback.classList.remove('hidden');
                 
                 setTimeout(() => {
                     feedback.classList.add('hidden');
-                }, 1500);
+                }, 800);
             }
 
             shuffleArray(array) {
