@@ -172,6 +172,18 @@
             box-shadow: 0 0 20px rgba(72, 52, 212, 0.3);
         }
 
+        .cangjie-input.warning {
+            border-color: #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
         .submit-btn {
             padding: 15px 40px;
             font-size: 1.2rem;
@@ -187,6 +199,19 @@
         .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .submit-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
         }
 
         .skip-btn {
@@ -589,6 +614,7 @@
                 this.correctAnswers = 0;
                 this.streak = 0;
                 this.maxStreak = 0;
+                this.isSubmitting = false; // Flag to prevent multiple submissions
                 
                 // Load progress from cookies
                 this.loadProgress();
@@ -1281,9 +1307,49 @@
             }
 
             submitAnswer() {
-                const userInput = document.getElementById('cangjie-input').value;
+                // Prevent multiple submissions for the same question
+                if (this.isSubmitting) {
+                    return;
+                }
+                
+                const userInput = document.getElementById('cangjie-input').value.trim();
+                
+                // Validate input - must not be empty and must contain valid characters
+                if (!userInput || userInput.length === 0) {
+                    // Show warning for empty input
+                    const feedback = document.getElementById('feedback');
+                    const inputField = document.getElementById('cangjie-input');
+                    
+                    feedback.textContent = '⚠️ 請輸入答案！';
+                    feedback.className = 'feedback incorrect';
+                    feedback.classList.remove('hidden');
+                    
+                    // Add visual warning to input field
+                    inputField.classList.add('warning');
+                    
+                    // Hide warning after short delay
+                    setTimeout(() => {
+                        feedback.classList.add('hidden');
+                        inputField.classList.remove('warning');
+                    }, 1500);
+                    
+                    // Focus back to input
+                    inputField.focus();
+                    return;
+                }
+                
                 const levelData = this.gameData[this.currentLevel];
                 const currentQuestion = levelData.questions[this.currentQuestionIndex % levelData.questions.length];
+
+                // Set submission flag to prevent multiple submissions
+                this.isSubmitting = true;
+                
+                // Disable submit button temporarily
+                const submitBtn = document.getElementById('submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = '處理中...';
+                submitBtn.style.opacity = '0.6';
 
                 this.totalQuestions++;
                 
@@ -1306,6 +1372,12 @@
                 // Move to next question after delay
                 setTimeout(() => {
                     this.nextQuestion();
+                    
+                    // Re-enable submit button for next question
+                    this.isSubmitting = false;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.opacity = '1';
                 }, 800);
             }
 
@@ -1353,8 +1425,23 @@
             }
 
             skipQuestion() {
+                // Prevent multiple skip actions for the same question
+                if (this.isSubmitting) {
+                    return;
+                }
+                
                 const levelData = this.gameData[this.currentLevel];
                 const currentQuestion = levelData.questions[this.currentQuestionIndex % levelData.questions.length];
+
+                // Set submission flag to prevent multiple actions
+                this.isSubmitting = true;
+                
+                // Disable skip button temporarily
+                const skipBtn = document.getElementById('skip-btn');
+                const originalText = skipBtn.textContent;
+                skipBtn.disabled = true;
+                skipBtn.textContent = '處理中...';
+                skipBtn.style.opacity = '0.6';
 
                 // Show feedback with character and code
                 const feedback = document.getElementById('feedback');
@@ -1368,6 +1455,12 @@
 
                 setTimeout(() => {
                     this.nextQuestion();
+                    
+                    // Re-enable skip button for next question
+                    this.isSubmitting = false;
+                    skipBtn.disabled = false;
+                    skipBtn.textContent = originalText;
+                    skipBtn.style.opacity = '1';
                 }, 800);
             }
 
